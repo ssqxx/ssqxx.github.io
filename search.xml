@@ -48,6 +48,13 @@
 <p>EOF</p>
 <p>完成文本信息文件创建，简化了创建到编辑再保存的步骤</p>
 ]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>UbuntuOS</tag>
+      </tags>
   </entry>
   <entry>
     <title>SpringCloud 学习笔记三： 服务的注册与发现</title>
