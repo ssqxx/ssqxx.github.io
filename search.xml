@@ -10,17 +10,17 @@
 <p>好啦！先去官网搞一个<a href="https://ubuntu.com/" target="_blank" rel="noopener">UbuntuOS</a>的<a href="https://ubuntu.com/download/desktop" target="_blank" rel="noopener">镜像 IOS</a>。</p>
 <p>直接下载 ubuntu18.04 版本（最新版）在虚拟机进行镜像安装。我选用的虚拟机是 Oracle VM virtualBox!</p>
 <p>完成一系列的镜像安装操作后，启动我的 UnubtuOS！</p>
-<p><img src="first-use-UbuntuOS.assets/ubuntu1.1-1584846713543.png" alt="ubuntu1.1"></p>
+<p><img src="../../../../images/2019_11_20_01/ubuntu1.1.png" alt="ubuntu1.1"></p>
 <p>安装初始化就是慢！！！</p>
 <p>安装成功，发现登录进来不是最高权限！！！！！！Oh No！！！！</p>
-<p><img src="first-use-UbuntuOS.assets/HoNo-1584846724942.gif" alt="HoNo"></p>
+<p><img src="../../../../images/2019_11_20_01/HoNo.gif" alt="HoNo"></p>
 <p>好吧！为了安全，第一次登录都是让用户先建一个用户……</p>
 <p>那怎么办，我只好 su root 了………………</p>
 <p>password：………………</p>
 <p>我哪知道密码呀！！！！</p>
 <p>原来 UbuntuOS 的 root 密码每次登录进来都会自动刷新，不是固定的，，裂了……</p>
 <p>没办法，只能百度了。。。。：怎么修改 Ubuntu 的密码</p>
-<p><img src="first-use-UbuntuOS.assets/onlyOneTure-1584846736427.gif" alt="onlyOneTure"></p>
+<p><img src="../../../../images/2019_11_20_01/onlyOneTure.gif" alt="onlyOneTure"></p>
 <p>点开<a href="https://www.fujieace.com/linux/sudo-passwd.html" target="_blank" rel="noopener">第一个</a>！！！！</p>
 <p>既然默认 root 密码是随机的，即每次开机都有一个新的 root 密码。我们只需要修改默认的 root 密码就行！</p>
 <p>我们先在终端输入命令 sudo passwd，然后再输入 root 用户的密码。</p>
