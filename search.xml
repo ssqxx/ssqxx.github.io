@@ -59,7 +59,7 @@
   <entry>
     <title>SpringCloud 学习笔记三： 服务的注册与发现</title>
     <url>/2019/10/25/the-learning-notes-by-SpringCloud-Eureka/</url>
-    <content><![CDATA[<h2 id="SpringCloud微服务构建一：服务的注册与发现-Eureka"><a href="#SpringCloud微服务构建一：服务的注册与发现-Eureka" class="headerlink" title="SpringCloud微服务构建一：服务的注册与发现-Eureka"></a>SpringCloud微服务构建一：服务的注册与发现-Eureka</h2><h3 id="一：服务发现"><a href="#一：服务发现" class="headerlink" title="一：服务发现"></a>一：服务发现</h3><p>在微服务架构中，服务发现组件是很关键的一个组件，服务发现组件就是去管理各服务的网络地址等信息。</p>
+    <content><![CDATA[<h2 id="SpringCloud-微服务构建一：服务的注册与发现-Eureka"><a href="#SpringCloud-微服务构建一：服务的注册与发现-Eureka" class="headerlink" title="SpringCloud 微服务构建一：服务的注册与发现-Eureka"></a>SpringCloud 微服务构建一：服务的注册与发现-Eureka</h2><h3 id="一：服务发现"><a href="#一：服务发现" class="headerlink" title="一：服务发现"></a>一：服务发现</h3><p>在微服务架构中，服务发现组件是很关键的一个组件，服务发现组件就是去管理各服务的网络地址等信息。</p>
 <p>服务提供者、服务消费者、服务发现组件的关系：</p>
 <ol>
 <li>服务启动时，会将自己的网络地址等信息注册到服务发现组件中，让服务发现组件去存储管理这些信息。</li>
@@ -69,9 +69,9 @@
 <p>Spring Cloud 支持多种服务发现组件，如 Eureka、Consul 和 Zookeeper 等，这里主要介绍 Spring Cloud Eureka 的使用。</p>
 <a id="more"></a>
 
-<h3 id="二：Eureka介绍"><a href="#二：Eureka介绍" class="headerlink" title="二：Eureka介绍"></a>二：Eureka介绍</h3><p>Eureka 是 Netflix 开源的服务治理模块，本身是一个基于 Rest 的服务。</p>
+<h3 id="二：Eureka-介绍"><a href="#二：Eureka-介绍" class="headerlink" title="二：Eureka 介绍"></a>二：Eureka 介绍</h3><p>Eureka 是 Netflix 开源的服务治理模块，本身是一个基于 Rest 的服务。</p>
 <ul>
-<li>基于Netflix Eureka做了二次封装</li>
+<li>基于 Netflix Eureka 做了二次封装</li>
 <li>两个组件组成：<ul>
 <li>Eureka Server 注册中心<ul>
 <li>Eureka Server 提供服务发现的功能，服务启动后，向 Eureka Server 注册自己的地址信息（IP、端口、服务名）</li>
@@ -80,62 +80,62 @@
 </ul>
 </li>
 <li>Eureka Client 服务中心<ul>
-<li>Eureka Client 是一个客户端，用于与 Eureka 的交互0服务启动后，与 Eureka Server 通过 心跳 机制通信，默认周期为 30 秒</li>
+<li>Eureka Client 是一个客户端，用于与 Eureka 的交互 0 服务启动后，与 Eureka Server 通过 心跳 机制通信，默认周期为 30 秒</li>
 <li>Eureka Client 有 缓存机制，会缓存服务注册表中的信息。服务不需要每次请求都查询 Eureka Server，这样既降低了 Server 的压力，同时即便 Eureka Server 的节点都宕机了，也可以使用缓存查询到服务提供者的信息完成调用</li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-<p>Eureka架构图：</p>
-<p><img src="the-learning-notes-by-SpringCloud-Eureka.assets/SpringCloud-Eureka-framework-1584847429893.jpg" alt="SpringCloud-Eureka-framework"></p>
-<h4 id="Eureka"><a href="#Eureka" class="headerlink" title="Eureka"></a>Eureka</h4><h5 id="eureka-server-–注册中心服务端"><a href="#eureka-server-–注册中心服务端" class="headerlink" title="eureka server –注册中心服务端"></a>eureka server –注册中心服务端</h5><p> 创建一个maven项目，之后在pom文件添加Eureka Server的依赖，pom.xml主要内容：</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;parent&gt;        </span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;        </span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;        </span><br><span class="line">    &lt;version&gt;2.1.9.RELEASE&lt;/version&gt;        </span><br><span class="line">    &lt;relativePath/&gt; </span><br><span class="line">    &lt;!-- lookup parent from repository --&gt;    </span><br><span class="line">    &lt;/parent&gt;    </span><br><span class="line">    &lt;groupId&gt;com.example&lt;/groupId&gt;    </span><br><span class="line">    &lt;artifactId&gt;eureka&lt;/artifactId&gt;    </span><br><span class="line">    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;    </span><br><span class="line">    &lt;name&gt;eureka&lt;/name&gt;    </span><br><span class="line">    &lt;description&gt;Demo project for Spring Boot&lt;/description&gt;    </span><br><span class="line">        &lt;properties&gt;        </span><br><span class="line">        	&lt;java.version&gt;1.8&lt;/java.version&gt;        </span><br><span class="line">        	&lt;spring-cloud.version&gt;Greenwich.SR3&lt;/spring-cloud.version&gt;    </span><br><span class="line">        &lt;/properties&gt;    </span><br><span class="line">        &lt;dependencies&gt;        </span><br><span class="line">        	&lt;dependency&gt;            </span><br><span class="line">        		&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;     </span><br><span class="line">        		&lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;        </span><br><span class="line">        	&lt;/dependency&gt;        </span><br><span class="line">        	&lt;dependency&gt;            </span><br><span class="line">        		&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;       </span><br><span class="line">        		&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt; </span><br><span class="line">        		&lt;scope&gt;test&lt;/scope&gt;        </span><br><span class="line">        	&lt;/dependency&gt;    </span><br><span class="line">        &lt;/dependencies&gt;    </span><br><span class="line">        &lt;dependencyManagement&gt;        </span><br><span class="line">        	&lt;dependencies&gt;            </span><br><span class="line">        	&lt;dependency&gt;                </span><br><span class="line">        		&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;     </span><br><span class="line">        		&lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;               </span><br><span class="line">        		&lt;version&gt;$&#123;spring-cloud.version&#125;&lt;/version&gt;       </span><br><span class="line">        		&lt;type&gt;pom&lt;/type&gt;                </span><br><span class="line">        		&lt;scope&gt;import&lt;/scope&gt;            </span><br><span class="line">        	&lt;/dependency&gt;        </span><br><span class="line">        	&lt;/dependencies&gt;    </span><br><span class="line">        &lt;/dependencyManagement&gt;    </span><br><span class="line">        &lt;build&gt;        </span><br><span class="line">        	&lt;plugins&gt;            </span><br><span class="line">        		&lt;plugin&gt;                </span><br><span class="line">        			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;   </span><br><span class="line">        			&lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;         </span><br><span class="line">        		&lt;/plugin&gt;        </span><br><span class="line">        	&lt;/plugins&gt;    </span><br><span class="line">        &lt;/build&gt;</span><br></pre></td></tr></table></figure>
+<p>Eureka 架构图：</p>
+<p><img src="../../../../images/2019_10_25_01/SpringCloud-Eureka-framework-1584847429893.jpg" alt="SpringCloud-Eureka-framework"></p>
+<h4 id="Eureka"><a href="#Eureka" class="headerlink" title="Eureka"></a>Eureka</h4><h5 id="eureka-server-–注册中心服务端"><a href="#eureka-server-–注册中心服务端" class="headerlink" title="eureka server –注册中心服务端"></a>eureka server –注册中心服务端</h5><p>创建一个 maven 项目，之后在 pom 文件添加 Eureka Server 的依赖，pom.xml 主要内容：</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;parent&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.1.9.RELEASE&lt;/version&gt;</span><br><span class="line">    &lt;relativePath/&gt;</span><br><span class="line">    &lt;!-- lookup parent from repository --&gt;</span><br><span class="line">    &lt;/parent&gt;</span><br><span class="line">    &lt;groupId&gt;com.example&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;eureka&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;</span><br><span class="line">    &lt;name&gt;eureka&lt;/name&gt;</span><br><span class="line">    &lt;description&gt;Demo project for Spring Boot&lt;/description&gt;</span><br><span class="line">        &lt;properties&gt;</span><br><span class="line">        	&lt;java.version&gt;1.8&lt;/java.version&gt;</span><br><span class="line">        	&lt;spring-cloud.version&gt;Greenwich.SR3&lt;/spring-cloud.version&gt;</span><br><span class="line">        &lt;/properties&gt;</span><br><span class="line">        &lt;dependencies&gt;</span><br><span class="line">        	&lt;dependency&gt;</span><br><span class="line">        		&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">        		&lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;</span><br><span class="line">        	&lt;/dependency&gt;</span><br><span class="line">        	&lt;dependency&gt;</span><br><span class="line">        		&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        		&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</span><br><span class="line">        		&lt;scope&gt;test&lt;/scope&gt;</span><br><span class="line">        	&lt;/dependency&gt;</span><br><span class="line">        &lt;/dependencies&gt;</span><br><span class="line">        &lt;dependencyManagement&gt;</span><br><span class="line">        	&lt;dependencies&gt;</span><br><span class="line">        	&lt;dependency&gt;</span><br><span class="line">        		&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">        		&lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;</span><br><span class="line">        		&lt;version&gt;$&#123;spring-cloud.version&#125;&lt;/version&gt;</span><br><span class="line">        		&lt;type&gt;pom&lt;/type&gt;</span><br><span class="line">        		&lt;scope&gt;import&lt;/scope&gt;</span><br><span class="line">        	&lt;/dependency&gt;</span><br><span class="line">        	&lt;/dependencies&gt;</span><br><span class="line">        &lt;/dependencyManagement&gt;</span><br><span class="line">        &lt;build&gt;</span><br><span class="line">        	&lt;plugins&gt;</span><br><span class="line">        		&lt;plugin&gt;</span><br><span class="line">        			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        			&lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</span><br><span class="line">        		&lt;/plugin&gt;</span><br><span class="line">        	&lt;/plugins&gt;</span><br><span class="line">        &lt;/build&gt;</span><br></pre></td></tr></table></figure>
 
-<p> 创建一个启动类：EurekaApplication</p>
-<p> 启动前在EurekaApplication启动类加上Eureka服务的注解：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span><span class="meta">@EnableEurekaServer</span> <span class="comment">//声明这是一个Eureka的服务类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EurekaApplication</span> </span>&#123;    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;        </span><br><span class="line">        SpringApplication.run(EurekaApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;    &#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>创建一个启动类：EurekaApplication</p>
+<p>启动前在 EurekaApplication 启动类加上 Eureka 服务的注解：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span><span class="meta">@EnableEurekaServer</span> <span class="comment">//声明这是一个Eureka的服务类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EurekaApplication</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(EurekaApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;    &#125;&#125;</span><br></pre></td></tr></table></figure>
 
-<p> 启动之后可以打开127.0.0.1:8080（默认为8080）</p>
-<p> 进入注册中心，则Eureka Server算初步完成创建</p>
-<p> 启动之后你会发现控制台在报错：</p>
-<p><img src="the-learning-notes-by-SpringCloud-Eureka.assets/SpringCloud-error-not-find-server-1584847543347.jpg" alt="SpringCloud-error-not-find-server"></p>
-<p> 因为Server也是Client，所以自己也需要注册进服务里面，有两种方式解决：</p>
+<p>启动之后可以打开 127.0.0.1:8080（默认为 8080）</p>
+<p>进入注册中心，则 Eureka Server 算初步完成创建</p>
+<p>启动之后你会发现控制台在报错：</p>
+<p><img src="../../../../images/2019_10_25_01/SpringCloud-error-not-find-server-1584847543347.jpg" alt="SpringCloud-error-not-find-server"></p>
+<p>因为 Server 也是 Client，所以自己也需要注册进服务里面，有两种方式解决：</p>
 <ol>
 <li>将自己注册进自己的服务里</li>
 <li>配置自己不注册到服务中</li>
 </ol>
 <p>二选一就能够解决控制台的报错！</p>
-<p> 配置文件：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">spring:</span>  </span><br><span class="line">	<span class="attr">application:</span>    </span><br><span class="line">		<span class="attr">name:</span> <span class="string">eureka-server1</span> <span class="comment">#服务名称</span></span><br><span class="line">            <span class="attr">server:</span>  </span><br><span class="line">            	<span class="attr">port:</span> <span class="number">8761</span> <span class="comment">#配置启动port，可以用localhost:8761启动了#1.将自己注册进自己的服务里</span></span><br><span class="line"><span class="attr">eureka:</span>  </span><br><span class="line">	<span class="attr">client:</span>    </span><br><span class="line">		<span class="attr">service-url:</span>      </span><br><span class="line">			<span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:8761/eureka/</span> <span class="string">、</span></span><br><span class="line"><span class="comment">#defaultZone 是与 Eureka Server 交互地址，用于查询服务和注册服务 （默认端口是 8761），如果要向多个服务中心注册用逗号隔开</span></span><br><span class="line"><span class="comment">#2.配置自己不注册到服务中eureka:  client:    register-with-eureka: false  </span></span><br><span class="line"><span class="comment"># 是否将自己注册到 Eureka Server    fetch-registry: false # 是否从 Eureka Server 获取注册信息</span></span><br></pre></td></tr></table></figure>
+<p>配置文件：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">	<span class="attr">application:</span></span><br><span class="line">		<span class="attr">name:</span> <span class="string">eureka-server1</span> <span class="comment">#服务名称</span></span><br><span class="line">            <span class="attr">server:</span></span><br><span class="line">            	<span class="attr">port:</span> <span class="number">8761</span> <span class="comment">#配置启动port，可以用localhost:8761启动了#1.将自己注册进自己的服务里</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">	<span class="attr">client:</span></span><br><span class="line">		<span class="attr">service-url:</span></span><br><span class="line">			<span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:8761/eureka/</span> <span class="string">、</span></span><br><span class="line"><span class="comment">#defaultZone 是与 Eureka Server 交互地址，用于查询服务和注册服务 （默认端口是 8761），如果要向多个服务中心注册用逗号隔开</span></span><br><span class="line"><span class="comment">#2.配置自己不注册到服务中eureka:  client:    register-with-eureka: false</span></span><br><span class="line"><span class="comment"># 是否将自己注册到 Eureka Server    fetch-registry: false # 是否从 Eureka Server 获取注册信息</span></span><br></pre></td></tr></table></figure>
 
-<p> 配置完之后重启服务，报错消失了！</p>
-<p> 由于还没有服务注册，所以没有被发现的服务：</p>
-<p><img src="the-learning-notes-by-SpringCloud-Eureka.assets/SpringCloud-index-Page-1584847519139.jpg" alt="SpringCloud-index-Page"></p>
-<h5 id="eureka-client-–注册服务客户端"><a href="#eureka-client-–注册服务客户端" class="headerlink" title="eureka client –注册服务客户端"></a>eureka client –注册服务客户端</h5><p> 创建完注册中心后，创建服务客户端</p>
-<p> 新建一个maven项目，在pom.xml添加Eureka Client依赖：</p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;parent&gt;        </span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;        </span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;        </span><br><span class="line">    &lt;version&gt;2.1.9.RELEASE&lt;/version&gt;        </span><br><span class="line">    &lt;relativePath/&gt; </span><br><span class="line">    &lt;!-- lookup parent from repository --&gt;    </span><br><span class="line">    &lt;/parent&gt;    </span><br><span class="line">    &lt;groupId&gt;com.example&lt;/groupId&gt;    </span><br><span class="line">    &lt;artifactId&gt;client&lt;/artifactId&gt;    </span><br><span class="line">    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;    </span><br><span class="line">    &lt;name&gt;client&lt;/name&gt;    </span><br><span class="line">    &lt;description&gt;Demo project for Spring Boot&lt;/description&gt;    </span><br><span class="line">        &lt;properties&gt;        </span><br><span class="line">        &lt;java.version&gt;1.8&lt;/java.version&gt;        </span><br><span class="line">        &lt;spring-cloud.version&gt;Greenwich.SR3&lt;/spring-cloud.version&gt;    </span><br><span class="line">        &lt;/properties&gt;    </span><br><span class="line">        &lt;dependencies&gt;        </span><br><span class="line">        	&lt;dependency&gt;            </span><br><span class="line">        		&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;     </span><br><span class="line">        		&lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;        </span><br><span class="line">        	&lt;/dependency&gt;        </span><br><span class="line">        	&lt;dependency&gt;            </span><br><span class="line">        		&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;      </span><br><span class="line">        		&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</span><br><span class="line">        		&lt;scope&gt;test&lt;/scope&gt;        </span><br><span class="line">        	&lt;/dependency&gt;        </span><br><span class="line">        	&lt;dependency&gt;            </span><br><span class="line">        		&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;       </span><br><span class="line">        		&lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt; </span><br><span class="line">        	&lt;/dependency&gt;    </span><br><span class="line">        &lt;/dependencies&gt;    </span><br><span class="line">        &lt;dependencyManagement&gt;        </span><br><span class="line">        	&lt;dependencies&gt;            </span><br><span class="line">        		&lt;dependency&gt;                </span><br><span class="line">        			&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt; </span><br><span class="line">        			&lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;       </span><br><span class="line">        			&lt;version&gt;$&#123;spring-cloud.version&#125;&lt;/version&gt;   </span><br><span class="line">        			&lt;type&gt;pom&lt;/type&gt;                </span><br><span class="line">        			&lt;scope&gt;import&lt;/scope&gt;            </span><br><span class="line">        		&lt;/dependency&gt;       </span><br><span class="line">        	&lt;/dependencies&gt;    </span><br><span class="line">        &lt;/dependencyManagement&gt;    </span><br><span class="line">        &lt;build&gt;        </span><br><span class="line">        	&lt;plugins&gt;            </span><br><span class="line">        		&lt;plugin&gt;                </span><br><span class="line">        			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;   </span><br><span class="line">        			&lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;         </span><br><span class="line">        		&lt;/plugin&gt;        </span><br><span class="line">        	&lt;/plugins&gt;    </span><br><span class="line">        &lt;/build&gt;</span><br></pre></td></tr></table></figure>
+<p>配置完之后重启服务，报错消失了！</p>
+<p>由于还没有服务注册，所以没有被发现的服务：</p>
+<p><img src="../../../../images/2019_10_25_01/SpringCloud-index-Page-1584847519139.jpg" alt="SpringCloud-index-Page"></p>
+<h5 id="eureka-client-–注册服务客户端"><a href="#eureka-client-–注册服务客户端" class="headerlink" title="eureka client –注册服务客户端"></a>eureka client –注册服务客户端</h5><p>创建完注册中心后，创建服务客户端</p>
+<p>新建一个 maven 项目，在 pom.xml 添加 Eureka Client 依赖：</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&lt;parent&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.1.9.RELEASE&lt;/version&gt;</span><br><span class="line">    &lt;relativePath/&gt;</span><br><span class="line">    &lt;!-- lookup parent from repository --&gt;</span><br><span class="line">    &lt;/parent&gt;</span><br><span class="line">    &lt;groupId&gt;com.example&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;client&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;</span><br><span class="line">    &lt;name&gt;client&lt;/name&gt;</span><br><span class="line">    &lt;description&gt;Demo project for Spring Boot&lt;/description&gt;</span><br><span class="line">        &lt;properties&gt;</span><br><span class="line">        &lt;java.version&gt;1.8&lt;/java.version&gt;</span><br><span class="line">        &lt;spring-cloud.version&gt;Greenwich.SR3&lt;/spring-cloud.version&gt;</span><br><span class="line">        &lt;/properties&gt;</span><br><span class="line">        &lt;dependencies&gt;</span><br><span class="line">        	&lt;dependency&gt;</span><br><span class="line">        		&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">        		&lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;</span><br><span class="line">        	&lt;/dependency&gt;</span><br><span class="line">        	&lt;dependency&gt;</span><br><span class="line">        		&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        		&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</span><br><span class="line">        		&lt;scope&gt;test&lt;/scope&gt;</span><br><span class="line">        	&lt;/dependency&gt;</span><br><span class="line">        	&lt;dependency&gt;</span><br><span class="line">        		&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        		&lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">        	&lt;/dependency&gt;</span><br><span class="line">        &lt;/dependencies&gt;</span><br><span class="line">        &lt;dependencyManagement&gt;</span><br><span class="line">        	&lt;dependencies&gt;</span><br><span class="line">        		&lt;dependency&gt;</span><br><span class="line">        			&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">        			&lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;</span><br><span class="line">        			&lt;version&gt;$&#123;spring-cloud.version&#125;&lt;/version&gt;</span><br><span class="line">        			&lt;type&gt;pom&lt;/type&gt;</span><br><span class="line">        			&lt;scope&gt;import&lt;/scope&gt;</span><br><span class="line">        		&lt;/dependency&gt;</span><br><span class="line">        	&lt;/dependencies&gt;</span><br><span class="line">        &lt;/dependencyManagement&gt;</span><br><span class="line">        &lt;build&gt;</span><br><span class="line">        	&lt;plugins&gt;</span><br><span class="line">        		&lt;plugin&gt;</span><br><span class="line">        			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        			&lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</span><br><span class="line">        		&lt;/plugin&gt;</span><br><span class="line">        	&lt;/plugins&gt;</span><br><span class="line">        &lt;/build&gt;</span><br></pre></td></tr></table></figure>
 
-<p> 同样的要先创建一个启动类ClientApplication</p>
-<p> 启动前也要在ClientApplication启动类上添加注解：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="comment">//@EnableEurekaClient </span></span><br><span class="line"><span class="comment">//添加注解才能真正的启动Eureka Client.@EnableDiscoveryClient </span></span><br><span class="line"><span class="comment">//是 spring-cloud-commons 项目的注解，是一个高度的抽象，对各种服务发现组件都提供了支持，如 Zookeeper 和 Consul 也支持</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClientApplication</span> </span>&#123;    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;        </span><br><span class="line">        SpringApplication.run(ClientApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;    &#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>同样的要先创建一个启动类 ClientApplication</p>
+<p>启动前也要在 ClientApplication 启动类上添加注解：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="comment">//@EnableEurekaClient</span></span><br><span class="line"><span class="comment">//添加注解才能真正的启动Eureka Client.@EnableDiscoveryClient</span></span><br><span class="line"><span class="comment">//是 spring-cloud-commons 项目的注解，是一个高度的抽象，对各种服务发现组件都提供了支持，如 Zookeeper 和 Consul 也支持</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClientApplication</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(ClientApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;    &#125;&#125;</span><br></pre></td></tr></table></figure>
 
-<p> 客户端不同注册中心能之间启动，需要先配置</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span>  </span><br><span class="line">	<span class="attr">port:</span> <span class="number">7761</span></span><br><span class="line"><span class="attr">spring:</span>  </span><br><span class="line">	<span class="attr">application:</span>    </span><br><span class="line">		<span class="attr">name:</span> <span class="string">client-server</span></span><br><span class="line"><span class="attr">eureka:</span>  </span><br><span class="line">	<span class="attr">client:</span>    </span><br><span class="line">		<span class="attr">service-url:</span>      </span><br><span class="line">			<span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:8761/eureka/</span></span><br></pre></td></tr></table></figure>
+<p>客户端不同注册中心能之间启动，需要先配置</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">port:</span> <span class="number">7761</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">application:</span></span><br><span class="line"><span class="attr">name:</span> <span class="string">client-server</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line"><span class="attr">client:</span></span><br><span class="line"><span class="attr">service-url:</span></span><br><span class="line"><span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:8761/eureka/</span></span><br></pre></td></tr></table></figure>
 
-<p> 先启动好Eureka Server，再启动Eureka Client</p>
-<p> 都启动之后，在你的注册中心有你的client注册进去，则Eureka Client算初步完成创建</p>
-<p><img src="the-learning-notes-by-SpringCloud-Eureka.assets/SpringCloud-Client-1584847530213.jpg" alt="SpringCloud-Client"></p>
-<h2 id="Eureka总结："><a href="#Eureka总结：" class="headerlink" title="Eureka总结："></a>Eureka总结：</h2><ul>
+<p>先启动好 Eureka Server，再启动 Eureka Client</p>
+<p>都启动之后，在你的注册中心有你的 client 注册进去，则 Eureka Client 算初步完成创建</p>
+<p><img src="../../../../images/2019_10_25_01/SpringCloud-Client-1584847530213.jpg" alt="SpringCloud-Client"></p>
+<h2 id="Eureka-总结："><a href="#Eureka-总结：" class="headerlink" title="Eureka 总结："></a>Eureka 总结：</h2><ul>
 <li>@EnableEurekaServer @EnableEurekaClient</li>
 <li>心跳检查、健康检查、负载均衡等功能</li>
-<li>Eureka的高可用，生成上建议至少两台以上</li>
+<li>Eureka 的高可用，生成上建议至少两台以上</li>
 <li><strong>分布式系统中，服务注册中心是最重要的基础部分</strong></li>
 </ul>
 <hr>
 <h2 id="鸣谢："><a href="#鸣谢：" class="headerlink" title="鸣谢："></a>鸣谢：</h2><ul>
-<li><a href="https://mp.weixin.qq.com/s/4c0PQO-u9qfP-sTFHUdVkA" target="_blank" rel="noopener">Spring Cloud构建微服务架构（一）服务注册与发现、高可用（Eureka）</a>—–程序员手册大全</li>
-<li><a href="http://blog.didispace.com/springcloud1/" target="_blank" rel="noopener">Spring Cloud构建微服务架构（一）服务注册与发现</a>——翟永超</li>
+<li><a href="https://mp.weixin.qq.com/s/4c0PQO-u9qfP-sTFHUdVkA" target="_blank" rel="noopener">Spring Cloud 构建微服务架构（一）服务注册与发现、高可用（Eureka）</a>—–程序员手册大全</li>
+<li><a href="http://blog.didispace.com/springcloud1/" target="_blank" rel="noopener">Spring Cloud 构建微服务架构（一）服务注册与发现</a>——翟永超</li>
 </ul>
 ]]></content>
       <categories>
@@ -149,73 +149,73 @@
   <entry>
     <title>SpringCloud学习笔记二：总架构概略</title>
     <url>/2019/10/24/the-learning-notes-by-SpringCloud-framework-overview/</url>
-    <content><![CDATA[<p>这篇博客主要讲SpringCloud架构，不会细讲，总的介绍一下SpringCloud整体架构</p>
+    <content><![CDATA[<p>这篇博客主要讲 SpringCloud 架构，不会细讲，总的介绍一下 SpringCloud 整体架构</p>
 <a id="more"></a>
 
-<p><img src="the-learning-notes-by-SpringCloud-framework-overview.assets/springCloud-total-framework-1584847070140.jpg" alt="springCloud-total-framework"></p>
-<h2 id="对SpringCloud技术名称的理解"><a href="#对SpringCloud技术名称的理解" class="headerlink" title="对SpringCloud技术名称的理解"></a>对SpringCloud技术名称的理解</h2><p> 1、Sleuth-链路跟踪 为服务之间调用提供链路追踪。通过Sleuth可以很清楚的了解到一个服务请求经过了哪些服务，每个服务处理花费了多长。从而让我们可以很方便的理清各微服务间的调用关系。</p>
-<p> 2、断路器（Hystrix）在微服务架构中，根据业务来拆分成一个个的服务，服务与服务之间可以相互调用（RPC），在Spring Cloud可以用RestTemplate+Ribbon和Feign来调用。为了保证其高可用，单个服务通常会集群部署。由于网络原因或者自身的原因，服务并不能保证100%可用，如果单个服务出现问题，调用这个服务就会出现线程阻塞，此时若有大量的请求涌入，Servlet容器的线程资源会被消耗完毕，导致服务瘫痪。服务与服务之间的依赖性，故障会传播，会对整个微服务系统造成灾难性的严重后果，这就是服务故障的“雪崩”效应。Netflix开源了Hystrix组件，实现了断路器模式，SpringCloud对这一组件进行了整合</p>
-<p> 3、Turbine集群监控 Turbine 是聚合服务器发送事件流数据的一个工具，用来监控集群下 hystrix 的 metrics 情况。 通过turbine可以监控集群的请求量，可以知道系统的请求高峰期，从而更好的知道系统的短板在哪里。</p>
-<p> 4、Consul服务治理 和Eureka服务治理 由于Spring Cloud为服务治理做了一层抽象接口，所以在Spring Cloud应用中可以支持多种不同的服务治理框架，比如：Netflix Eureka、Consul、Zookeeper。</p>
-<p> Spring Cloud Consul项目是针对Consul的服务治理实现。Consul是一个分布式高可用的系统，它包含多个组件，但是作为一个整体，在微服务架构中为我们的基础设施提供服务发现和服务配置的工具。它包含了下面几个特性：服务发现、 健康检查、 Key/Value存储、 多数据中心。由于Consul自身提供了服务端，所以我们不需要像之前实现Eureka的时候创建服务注册中心，直接通过下载consul的服务端程序就可以使用。Consul比Eureka注册支持的更多一些。</p>
-<p> 5、config配置管理 引入spring cloud config后，我们的外部配置文件就可以集中放置在一个git仓库里，再新建一个config server，用来管理所有的配置文件，维护的时候需要更改配置时，只需要在本地更改后，推送到远程仓库，所有的服务实例都可以通过config server来获取配置文件，这时每个服务实例就相当于配置服务的客户端config client,为了保证系统的稳定，配置服务端config server可以进行集群部署</p>
-<p> 6、Nginx用来做反向代理、负载均衡，当有请求的时候，根据配置的调度策略（加权轮询、IP哈希、最少连接数、一致性哈希）给请求者返回相应的服务器IP。</p>
-<p> 7、Zuul服务网关 zuul的核心是一系列的filters, 其作用可以类比Servlet框架的Filter Zuul的主要功能是路由和过滤器。是各种服务的统一入口，同时还会用来提供监控、授权、安全、调度等等；可以通过扩展ZuulFilter，在执行方法之前，做各种检查工作。</p>
-<h2 id="SpringCloud项目"><a href="#SpringCloud项目" class="headerlink" title="SpringCloud项目"></a>SpringCloud项目</h2><h3 id="SpringCloud的简单介绍"><a href="#SpringCloud的简单介绍" class="headerlink" title="SpringCloud的简单介绍"></a>SpringCloud的简单介绍</h3><p> springCloud是基于SpringBoot的一整套实现微服务的框架。他提供了微服务开发所需的配置管理、服务发现、断路器、智能路由、微代理、控制总线、全局锁、决策竞选、分布式会话和集群状态管理等组件。最重要的是，跟spring boot框架一起使用的话，会让你开发微服务架构的云服务非常好的方便。</p>
-<p> SpringBoot旨在简化创建产品级的 Spring 应用和服务，简化了配置文件，使用嵌入式web服务器，含有诸多开箱即用微服务功能</p>
-<p> spring cloud子项目包括：</p>
-<p> Spring Cloud Config：配置管理开发工具包，可以让你把配置放到远程服务器，目前支持本地存储、Git以及Subversion。</p>
-<p> Spring Cloud Bus：事件、消息总线，用于在集群（例如，配置变化事件）中传播状态变化，可与Spring Cloud Config联合实现热部署。</p>
-<p> Spring Cloud Netflix：针对多种Netflix组件提供的开发工具包，其中包括Eureka、Hystrix、Zuul、Archaius等。</p>
-<p> Netflix Eureka：云端负载均衡，一个基于 REST 的服务，用于定位服务，以实现云端的负载均衡和中间层服务器的故障转移。</p>
-<p> Netflix Hystrix：容错管理工具，旨在通过控制服务和第三方库的节点,从而对延迟和故障提供更强大的容错能力。</p>
-<p> Netflix Zuul：边缘服务工具，是提供动态路由，监控，弹性，安全等的边缘服务。</p>
-<p> Netflix Archaius：配置管理API，包含一系列配置管理API，提供动态类型化属性、线程安全配置操作、轮询框架、回调机制等功能。</p>
-<p> Spring Cloud for Cloud Foundry：通过Oauth2协议绑定服务到CloudFoundry，CloudFoundry是VMware推出的开源PaaS云平台。</p>
-<p> Spring Cloud Sleuth：日志收集工具包，封装了Dapper,Zipkin和HTrace操作。</p>
-<p> Spring Cloud Data Flow：大数据操作工具，通过命令行方式操作数据流。</p>
-<p> Spring Cloud Security：安全工具包，为你的应用程序添加安全控制，主要是指OAuth2。</p>
-<p> Spring Cloud Consul：封装了Consul操作，consul是一个服务发现与配置工具，与Docker容器可以无缝集成。</p>
-<p> Spring Cloud Zookeeper：操作Zookeeper的工具包，用于使用zookeeper方式的服务注册和发现。</p>
-<p> Spring Cloud Stream：数据流操作开发包，封装了与Redis,Rabbit、Kafka等发送接收消息。</p>
-<p> Spring Cloud CLI：基于 Spring Boot CLI，可以让你以命令行方式快速建立云组件</p>
-<h3 id="springCloud的特点"><a href="#springCloud的特点" class="headerlink" title="springCloud的特点"></a>springCloud的特点</h3><ol>
+<p><img src="../../../../images/2019_10_24_01/springCloud-total-framework-1584847070140.jpg" alt="springCloud-total-framework"></p>
+<h2 id="对-SpringCloud-技术名称的理解"><a href="#对-SpringCloud-技术名称的理解" class="headerlink" title="对 SpringCloud 技术名称的理解"></a>对 SpringCloud 技术名称的理解</h2><p>1、Sleuth-链路跟踪 为服务之间调用提供链路追踪。通过 Sleuth 可以很清楚的了解到一个服务请求经过了哪些服务，每个服务处理花费了多长。从而让我们可以很方便的理清各微服务间的调用关系。</p>
+<p>2、断路器（Hystrix）在微服务架构中，根据业务来拆分成一个个的服务，服务与服务之间可以相互调用（RPC），在 Spring Cloud 可以用 RestTemplate+Ribbon 和 Feign 来调用。为了保证其高可用，单个服务通常会集群部署。由于网络原因或者自身的原因，服务并不能保证 100%可用，如果单个服务出现问题，调用这个服务就会出现线程阻塞，此时若有大量的请求涌入，Servlet 容器的线程资源会被消耗完毕，导致服务瘫痪。服务与服务之间的依赖性，故障会传播，会对整个微服务系统造成灾难性的严重后果，这就是服务故障的“雪崩”效应。Netflix 开源了 Hystrix 组件，实现了断路器模式，SpringCloud 对这一组件进行了整合</p>
+<p>3、Turbine 集群监控 Turbine 是聚合服务器发送事件流数据的一个工具，用来监控集群下 hystrix 的 metrics 情况。 通过 turbine 可以监控集群的请求量，可以知道系统的请求高峰期，从而更好的知道系统的短板在哪里。</p>
+<p>4、Consul 服务治理 和 Eureka 服务治理 由于 Spring Cloud 为服务治理做了一层抽象接口，所以在 Spring Cloud 应用中可以支持多种不同的服务治理框架，比如：Netflix Eureka、Consul、Zookeeper。</p>
+<p>Spring Cloud Consul 项目是针对 Consul 的服务治理实现。Consul 是一个分布式高可用的系统，它包含多个组件，但是作为一个整体，在微服务架构中为我们的基础设施提供服务发现和服务配置的工具。它包含了下面几个特性：服务发现、 健康检查、 Key/Value 存储、 多数据中心。由于 Consul 自身提供了服务端，所以我们不需要像之前实现 Eureka 的时候创建服务注册中心，直接通过下载 consul 的服务端程序就可以使用。Consul 比 Eureka 注册支持的更多一些。</p>
+<p>5、config 配置管理 引入 spring cloud config 后，我们的外部配置文件就可以集中放置在一个 git 仓库里，再新建一个 config server，用来管理所有的配置文件，维护的时候需要更改配置时，只需要在本地更改后，推送到远程仓库，所有的服务实例都可以通过 config server 来获取配置文件，这时每个服务实例就相当于配置服务的客户端 config client,为了保证系统的稳定，配置服务端 config server 可以进行集群部署</p>
+<p>6、Nginx 用来做反向代理、负载均衡，当有请求的时候，根据配置的调度策略（加权轮询、IP 哈希、最少连接数、一致性哈希）给请求者返回相应的服务器 IP。</p>
+<p>7、Zuul 服务网关 zuul 的核心是一系列的 filters, 其作用可以类比 Servlet 框架的 Filter Zuul 的主要功能是路由和过滤器。是各种服务的统一入口，同时还会用来提供监控、授权、安全、调度等等；可以通过扩展 ZuulFilter，在执行方法之前，做各种检查工作。</p>
+<h2 id="SpringCloud-项目"><a href="#SpringCloud-项目" class="headerlink" title="SpringCloud 项目"></a>SpringCloud 项目</h2><h3 id="SpringCloud-的简单介绍"><a href="#SpringCloud-的简单介绍" class="headerlink" title="SpringCloud 的简单介绍"></a>SpringCloud 的简单介绍</h3><p>springCloud 是基于 SpringBoot 的一整套实现微服务的框架。他提供了微服务开发所需的配置管理、服务发现、断路器、智能路由、微代理、控制总线、全局锁、决策竞选、分布式会话和集群状态管理等组件。最重要的是，跟 spring boot 框架一起使用的话，会让你开发微服务架构的云服务非常好的方便。</p>
+<p>SpringBoot 旨在简化创建产品级的 Spring 应用和服务，简化了配置文件，使用嵌入式 web 服务器，含有诸多开箱即用微服务功能</p>
+<p>spring cloud 子项目包括：</p>
+<p>Spring Cloud Config：配置管理开发工具包，可以让你把配置放到远程服务器，目前支持本地存储、Git 以及 Subversion。</p>
+<p>Spring Cloud Bus：事件、消息总线，用于在集群（例如，配置变化事件）中传播状态变化，可与 Spring Cloud Config 联合实现热部署。</p>
+<p>Spring Cloud Netflix：针对多种 Netflix 组件提供的开发工具包，其中包括 Eureka、Hystrix、Zuul、Archaius 等。</p>
+<p>Netflix Eureka：云端负载均衡，一个基于 REST 的服务，用于定位服务，以实现云端的负载均衡和中间层服务器的故障转移。</p>
+<p>Netflix Hystrix：容错管理工具，旨在通过控制服务和第三方库的节点,从而对延迟和故障提供更强大的容错能力。</p>
+<p>Netflix Zuul：边缘服务工具，是提供动态路由，监控，弹性，安全等的边缘服务。</p>
+<p>Netflix Archaius：配置管理 API，包含一系列配置管理 API，提供动态类型化属性、线程安全配置操作、轮询框架、回调机制等功能。</p>
+<p>Spring Cloud for Cloud Foundry：通过 Oauth2 协议绑定服务到 CloudFoundry，CloudFoundry 是 VMware 推出的开源 PaaS 云平台。</p>
+<p>Spring Cloud Sleuth：日志收集工具包，封装了 Dapper,Zipkin 和 HTrace 操作。</p>
+<p>Spring Cloud Data Flow：大数据操作工具，通过命令行方式操作数据流。</p>
+<p>Spring Cloud Security：安全工具包，为你的应用程序添加安全控制，主要是指 OAuth2。</p>
+<p>Spring Cloud Consul：封装了 Consul 操作，consul 是一个服务发现与配置工具，与 Docker 容器可以无缝集成。</p>
+<p>Spring Cloud Zookeeper：操作 Zookeeper 的工具包，用于使用 zookeeper 方式的服务注册和发现。</p>
+<p>Spring Cloud Stream：数据流操作开发包，封装了与 Redis,Rabbit、Kafka 等发送接收消息。</p>
+<p>Spring Cloud CLI：基于 Spring Boot CLI，可以让你以命令行方式快速建立云组件</p>
+<h3 id="springCloud-的特点"><a href="#springCloud-的特点" class="headerlink" title="springCloud 的特点"></a>springCloud 的特点</h3><ol>
 <li>约定优于配置</li>
 <li>开箱即用、快速的启动</li>
 <li>适用各种环境</li>
 <li>轻量级的组件</li>
 <li>组件丰富，功能完整</li>
 </ol>
-<h3 id="SpringCluod逻辑结构图"><a href="#SpringCluod逻辑结构图" class="headerlink" title="SpringCluod逻辑结构图"></a>SpringCluod逻辑结构图</h3><p><img src="the-learning-notes-by-SpringCloud-framework-overview.assets/springcloud-role-1584847082466.jpg" alt="springcloud-role"></p>
-<p> Spring cloud作为当下主流的微服务框架，让我们实现微服务架构简单快捷，Spring cloud中各个组件在微服务架构中扮演的角色如上图所示，黑线表示注释说明，蓝线由A指向B，表示B从A处获取服务。包括各种微服务、注册发现、服务网关、熔断器、统一配置、跟踪服务等……</p>
-<h2 id="SpringCloud组件角色概况"><a href="#SpringCloud组件角色概况" class="headerlink" title="SpringCloud组件角色概况"></a>SpringCloud组件角色概况</h2><h3 id="feign（接口调用）"><a href="#feign（接口调用）" class="headerlink" title="feign（接口调用）"></a>feign（接口调用）</h3><p> 微服务之间通过Rest接口通讯，Spring Cloud提供Feign框架来支持Rest的调用，Feign使得不同进程的Rest接口调用得以用优雅的方式进行，这种优雅表现得就像同一个进程调用一样。。</p>
-<h3 id="Netflix-eureka（注册发现）"><a href="#Netflix-eureka（注册发现）" class="headerlink" title="Netflix eureka（注册发现）"></a>Netflix eureka（注册发现）</h3><p> 微服务模式下，一个大的Web应用通常都被拆分为很多比较小的web应用(服务)，这个时候就需要有一个地方保存这些服务的相关信息，才能让各个小的应用彼此知道对方，这个时候就需要在注册中心进行注册。每个应用启动时向配置的注册中心注册自己的信息（ip地址，端口号, 服务名称等信息），注册中心将他们保存起来，服务间相互调用的时候，通过服务名称就可以到注册中心找到对应的服务信息，从而进行通讯。注册与发现服务为微服务之间的调用带来了方便，解决了硬编码的问题。服务间只通过对方的服务id，而无需知道其ip和端口即可以获取对方方服务。</p>
-<h3 id="Ribbon（负载均衡）"><a href="#Ribbon（负载均衡）" class="headerlink" title="Ribbon（负载均衡）"></a>Ribbon（负载均衡）</h3><p> Ribbon是Netflix发布的负载均衡器，它有助于控制HTTP和TCP客户端的行为。为Ribbon，配置服务提供者的地址列表后，Ribbon就可基于某种负载均衡算法，自动地帮助服务消费者去请求。Ribbon默认为我们提供了很多的负载均衡算法，例如轮询、随机等。当然，我们也可为Ribbon实现自定义的负载均衡算法。在SpringCloud中，当Ribbon与Eureka配合使用时，Ribbon可自动从EurekaServer获取服务提供者的地址列表，并基于负载均衡算法，请求其中一个服务提供者的实例（为了服务的可靠性，一个微服务可能部署多个实例）。</p>
-<h3 id="Hystrix（熔断器）"><a href="#Hystrix（熔断器）" class="headerlink" title="Hystrix（熔断器）"></a>Hystrix（熔断器）</h3><p> 当服务提供者响应非常缓慢，那么消费者对提供者的请求就会被强制等待，直到提供者响应或超时。在高负载场景下，如果不做任何处理，此类问题可能会导致服务消费者的资源耗竭甚至整个系统的崩溃（雪崩效应）。Hystrix正是为了防止此类问题发生。Hystrix是由Netflix开源的一个延迟和容错库，用于隔离访问远程系统、服务或者第三方库，防止级联失败，从而提升系统的可用性与容错性。Hystrix主要通过以下几点实现延迟和容错。</p>
-<p> 包裹请求：使用HystrixCommand（或HystrixObservableCommand）包裹对依赖的调用逻辑，每个命令在独立线程中执行。这使用了设计模式中的“命令模式”。</p>
-<p> 跳闸机制：当某服务的错误率超过一定阈值时，Hystrix可以自动或者手动跳闸，停止请求该服务一段时间。</p>
-<p> 资源隔离：Hystrix为每个依赖都维护了一个小型的线程池（或者信号量）。如果该线程池已满，发往该依赖的请求就被立即拒绝，而不是排队等候，从而加速失败判定。</p>
-<p> 监控：Hystrix可以近乎实时地监控运行指标和配置的变化，例如成功、失败、超时和被拒绝的请求等。</p>
-<p> 回退机制：当请求失败、超时、被拒绝，或当断路器打开时，执行回退逻辑。回退逻辑可由开发人员指定。</p>
-<h3 id="Zuul（网关）"><a href="#Zuul（网关）" class="headerlink" title="Zuul（网关）"></a>Zuul（网关）</h3><p> 不同的微服务一般会有不同的网络地址，而外部客户端可能需要调用多个服务的接口才能完成一个业务需求。例如一个电影购票的手机APP，可能调用多个微服务的接口才能完成一次购票的业务流程，如果让客户端直接与各个微服务通信，会有以下的问题：</p>
-<p> 客户端会多次请求不同的微服务，增加了客户端的复杂性。</p>
-<p> 存在跨域请求，在一定场景下处理相对复杂。</p>
-<p> 认证复杂，每个服务都需要独立认证。</p>
-<p> 难以重构，随着项目的迭代，可能需要重新划分微服务。例如，可能将多个服务合并成一个或者将一个服务拆分成多个。如果客户端直接与微服务通信，那么重构将很难实施。</p>
-<p> 某些微服务可能使用了对防火墙/浏览器不友好的协议，直接访问时会有一定的困难。</p>
-<p> 以上问题可借助微服务网关解决。微服务网关是介于客户端和服务器端之间的中间层，所有的外部请求都会先经过微服务网关。使用微服务网关后，微服务网关将封装应用程序的内部结构，客户端只用跟网关交互，而无须直接调用特定微服务的接口。这样，开发就可以得到简化。不仅如此，使用微服务网关还有以下优点：</p>
-<p> 易于监控。可在微服务网关收集监控数据并将其推送到外部系统进行分析。</p>
-<p> 易于认证。可在微服务网关上进行认证，然后再将请求转发到后端的微服务，而无须在每个微服务中进行认证。</p>
-<p> 减少了客户端与各个微服务之间的交互次数。</p>
-<h3 id="SpringCloudBus（统一配置服务）"><a href="#SpringCloudBus（统一配置服务）" class="headerlink" title="SpringCloudBus（统一配置服务）"></a>SpringCloudBus（统一配置服务）</h3><p> 对于传统的单体应用，常使用配置文件管理所有配置。例如一个SpringBoot开发的单体应用，可将配置内容放在application.yml文件中。如果需要切换环境，可设置多个Profile，并在启动应用时指定spring.profiles.active={profile}。然而，在微服务架构中，微服务的配置管理一般有以下需求：</p>
-<p> 集中管理配置。一个使用微服务架构的应用系统可能会包含成百上千个微服务，因此集中管理配置是非常有必要的。</p>
-<p> 不同环境，不同配置。例如，数据源配置在不同的环境（开发、测试、预发布、生产等）中是不同的。</p>
-<p> 运行期间可动态调整。例如，可根据各个微服务的负载情况，动态调整数据源连接池大小或熔断阈值，并且在调整配置时不停止微服务。</p>
-<p> 配置修改后可自动更新。如配置内容发生变化，微服务能够自动更新配置。综上所述，对于微服务架构而言，一个通用的配置管理机制是必不可少的，常见做法是使用配置服务器管理配置。Spring cloud bus利用Git或SVN等管理配置、采用Kafka或者RabbitMQ等消息总线通知所有应用，从而实现配置的自动更新并且刷新所有微服务实例的配置。</p>
-<h3 id="SpringCloud-Sleuth-ZipKin（跟踪服务）"><a href="#SpringCloud-Sleuth-ZipKin（跟踪服务）" class="headerlink" title="SpringCloud Sleuth + ZipKin（跟踪服务）"></a>SpringCloud Sleuth + ZipKin（跟踪服务）</h3><p> Sleuth和Zipkin结合使用可以通过图形化的界面查看微服务请求的延迟情况以及各个微服务的依赖情况。需要注意的是Spring boot2及以上不在支持Zipkin的自定义，需要到官方网站下载ZipKin相关的jar包。</p>
-<h3 id="SpringCloud-Actuator（执行器）"><a href="#SpringCloud-Actuator（执行器）" class="headerlink" title="SpringCloud Actuator（执行器）"></a>SpringCloud Actuator（执行器）</h3><p> 提供了很多监控端点如/actuator/info、/actuator/health、/acutator/refresh等，可以查看微服务的信息、健康状况、刷新配置等。</p>
+<h3 id="SpringCluod-逻辑结构图"><a href="#SpringCluod-逻辑结构图" class="headerlink" title="SpringCluod 逻辑结构图"></a>SpringCluod 逻辑结构图</h3><p><img src="../../../../images/2019_10_24_01/springcloud-role-1584847082466.jpg" alt="springcloud-role"></p>
+<p>Spring cloud 作为当下主流的微服务框架，让我们实现微服务架构简单快捷，Spring cloud 中各个组件在微服务架构中扮演的角色如上图所示，黑线表示注释说明，蓝线由 A 指向 B，表示 B 从 A 处获取服务。包括各种微服务、注册发现、服务网关、熔断器、统一配置、跟踪服务等……</p>
+<h2 id="SpringCloud-组件角色概况"><a href="#SpringCloud-组件角色概况" class="headerlink" title="SpringCloud 组件角色概况"></a>SpringCloud 组件角色概况</h2><h3 id="feign（接口调用）"><a href="#feign（接口调用）" class="headerlink" title="feign（接口调用）"></a>feign（接口调用）</h3><p>微服务之间通过 Rest 接口通讯，Spring Cloud 提供 Feign 框架来支持 Rest 的调用，Feign 使得不同进程的 Rest 接口调用得以用优雅的方式进行，这种优雅表现得就像同一个进程调用一样。。</p>
+<h3 id="Netflix-eureka（注册发现）"><a href="#Netflix-eureka（注册发现）" class="headerlink" title="Netflix eureka（注册发现）"></a>Netflix eureka（注册发现）</h3><p>微服务模式下，一个大的 Web 应用通常都被拆分为很多比较小的 web 应用(服务)，这个时候就需要有一个地方保存这些服务的相关信息，才能让各个小的应用彼此知道对方，这个时候就需要在注册中心进行注册。每个应用启动时向配置的注册中心注册自己的信息（ip 地址，端口号, 服务名称等信息），注册中心将他们保存起来，服务间相互调用的时候，通过服务名称就可以到注册中心找到对应的服务信息，从而进行通讯。注册与发现服务为微服务之间的调用带来了方便，解决了硬编码的问题。服务间只通过对方的服务 id，而无需知道其 ip 和端口即可以获取对方方服务。</p>
+<h3 id="Ribbon（负载均衡）"><a href="#Ribbon（负载均衡）" class="headerlink" title="Ribbon（负载均衡）"></a>Ribbon（负载均衡）</h3><p>Ribbon 是 Netflix 发布的负载均衡器，它有助于控制 HTTP 和 TCP 客户端的行为。为 Ribbon，配置服务提供者的地址列表后，Ribbon 就可基于某种负载均衡算法，自动地帮助服务消费者去请求。Ribbon 默认为我们提供了很多的负载均衡算法，例如轮询、随机等。当然，我们也可为 Ribbon 实现自定义的负载均衡算法。在 SpringCloud 中，当 Ribbon 与 Eureka 配合使用时，Ribbon 可自动从 EurekaServer 获取服务提供者的地址列表，并基于负载均衡算法，请求其中一个服务提供者的实例（为了服务的可靠性，一个微服务可能部署多个实例）。</p>
+<h3 id="Hystrix（熔断器）"><a href="#Hystrix（熔断器）" class="headerlink" title="Hystrix（熔断器）"></a>Hystrix（熔断器）</h3><p>当服务提供者响应非常缓慢，那么消费者对提供者的请求就会被强制等待，直到提供者响应或超时。在高负载场景下，如果不做任何处理，此类问题可能会导致服务消费者的资源耗竭甚至整个系统的崩溃（雪崩效应）。Hystrix 正是为了防止此类问题发生。Hystrix 是由 Netflix 开源的一个延迟和容错库，用于隔离访问远程系统、服务或者第三方库，防止级联失败，从而提升系统的可用性与容错性。Hystrix 主要通过以下几点实现延迟和容错。</p>
+<p>包裹请求：使用 HystrixCommand（或 HystrixObservableCommand）包裹对依赖的调用逻辑，每个命令在独立线程中执行。这使用了设计模式中的“命令模式”。</p>
+<p>跳闸机制：当某服务的错误率超过一定阈值时，Hystrix 可以自动或者手动跳闸，停止请求该服务一段时间。</p>
+<p>资源隔离：Hystrix 为每个依赖都维护了一个小型的线程池（或者信号量）。如果该线程池已满，发往该依赖的请求就被立即拒绝，而不是排队等候，从而加速失败判定。</p>
+<p>监控：Hystrix 可以近乎实时地监控运行指标和配置的变化，例如成功、失败、超时和被拒绝的请求等。</p>
+<p>回退机制：当请求失败、超时、被拒绝，或当断路器打开时，执行回退逻辑。回退逻辑可由开发人员指定。</p>
+<h3 id="Zuul（网关）"><a href="#Zuul（网关）" class="headerlink" title="Zuul（网关）"></a>Zuul（网关）</h3><p>不同的微服务一般会有不同的网络地址，而外部客户端可能需要调用多个服务的接口才能完成一个业务需求。例如一个电影购票的手机 APP，可能调用多个微服务的接口才能完成一次购票的业务流程，如果让客户端直接与各个微服务通信，会有以下的问题：</p>
+<p>客户端会多次请求不同的微服务，增加了客户端的复杂性。</p>
+<p>存在跨域请求，在一定场景下处理相对复杂。</p>
+<p>认证复杂，每个服务都需要独立认证。</p>
+<p>难以重构，随着项目的迭代，可能需要重新划分微服务。例如，可能将多个服务合并成一个或者将一个服务拆分成多个。如果客户端直接与微服务通信，那么重构将很难实施。</p>
+<p>某些微服务可能使用了对防火墙/浏览器不友好的协议，直接访问时会有一定的困难。</p>
+<p>以上问题可借助微服务网关解决。微服务网关是介于客户端和服务器端之间的中间层，所有的外部请求都会先经过微服务网关。使用微服务网关后，微服务网关将封装应用程序的内部结构，客户端只用跟网关交互，而无须直接调用特定微服务的接口。这样，开发就可以得到简化。不仅如此，使用微服务网关还有以下优点：</p>
+<p>易于监控。可在微服务网关收集监控数据并将其推送到外部系统进行分析。</p>
+<p>易于认证。可在微服务网关上进行认证，然后再将请求转发到后端的微服务，而无须在每个微服务中进行认证。</p>
+<p>减少了客户端与各个微服务之间的交互次数。</p>
+<h3 id="SpringCloudBus（统一配置服务）"><a href="#SpringCloudBus（统一配置服务）" class="headerlink" title="SpringCloudBus（统一配置服务）"></a>SpringCloudBus（统一配置服务）</h3><p>对于传统的单体应用，常使用配置文件管理所有配置。例如一个 SpringBoot 开发的单体应用，可将配置内容放在 application.yml 文件中。如果需要切换环境，可设置多个 Profile，并在启动应用时指定 spring.profiles.active={profile}。然而，在微服务架构中，微服务的配置管理一般有以下需求：</p>
+<p>集中管理配置。一个使用微服务架构的应用系统可能会包含成百上千个微服务，因此集中管理配置是非常有必要的。</p>
+<p>不同环境，不同配置。例如，数据源配置在不同的环境（开发、测试、预发布、生产等）中是不同的。</p>
+<p>运行期间可动态调整。例如，可根据各个微服务的负载情况，动态调整数据源连接池大小或熔断阈值，并且在调整配置时不停止微服务。</p>
+<p>配置修改后可自动更新。如配置内容发生变化，微服务能够自动更新配置。综上所述，对于微服务架构而言，一个通用的配置管理机制是必不可少的，常见做法是使用配置服务器管理配置。Spring cloud bus 利用 Git 或 SVN 等管理配置、采用 Kafka 或者 RabbitMQ 等消息总线通知所有应用，从而实现配置的自动更新并且刷新所有微服务实例的配置。</p>
+<h3 id="SpringCloud-Sleuth-ZipKin（跟踪服务）"><a href="#SpringCloud-Sleuth-ZipKin（跟踪服务）" class="headerlink" title="SpringCloud Sleuth + ZipKin（跟踪服务）"></a>SpringCloud Sleuth + ZipKin（跟踪服务）</h3><p>Sleuth 和 Zipkin 结合使用可以通过图形化的界面查看微服务请求的延迟情况以及各个微服务的依赖情况。需要注意的是 Spring boot2 及以上不在支持 Zipkin 的自定义，需要到官方网站下载 ZipKin 相关的 jar 包。</p>
+<h3 id="SpringCloud-Actuator（执行器）"><a href="#SpringCloud-Actuator（执行器）" class="headerlink" title="SpringCloud Actuator（执行器）"></a>SpringCloud Actuator（执行器）</h3><p>提供了很多监控端点如/actuator/info、/actuator/health、/acutator/refresh 等，可以查看微服务的信息、健康状况、刷新配置等。</p>
 <hr>
-<h2 id="鸣谢"><a href="#鸣谢" class="headerlink" title="鸣谢"></a>鸣谢</h2><p> 本博客参考自：<a href="https://mp.weixin.qq.com/s/qjLUfuXUQWfczMuFsIRlcQ" target="_blank" rel="noopener">简单了解SpringCloud的微服务架构</a> –程序员手册大全</p>
+<h2 id="鸣谢"><a href="#鸣谢" class="headerlink" title="鸣谢"></a>鸣谢</h2><p>本博客参考自：<a href="https://mp.weixin.qq.com/s/qjLUfuXUQWfczMuFsIRlcQ" target="_blank" rel="noopener">简单了解 SpringCloud 的微服务架构</a> –程序员手册大全</p>
 ]]></content>
       <categories>
         <category>SpringCloud</category>
@@ -227,57 +227,57 @@
   <entry>
     <title>SpringCloud学习笔记一：前言</title>
     <url>/2019/10/23/the-learning-notes-by-SpringCloud-preface/</url>
-    <content><![CDATA[<p> 最近在公司写文档，可以抽出时间来充实一下自己，我打算认认真真的学一遍springCloud，然后将我会尽可能详细的将自己学习的过程记录下来……</p>
-<p> 好了，废话不多说，SpringCloud走起！……</p>
+    <content><![CDATA[<p>最近在公司写文档，可以抽出时间来充实一下自己，我打算认认真真的学一遍 springCloud，然后将我会尽可能详细的将自己学习的过程记录下来……</p>
+<p>好了，废话不多说，SpringCloud 走起！……</p>
 <a id="more"></a>
 
-<p> SpringCloud官网：<a href="https://spring.io/" target="_blank" rel="noopener">Spring.io</a>以及<a href="https://spring.io/projects/spring-cloud" target="_blank" rel="noopener">SpringCloud介绍</a></p>
-<p> SpringCloud中文：<a href="https://www.springcloud.cc/" target="_blank" rel="noopener">中文文档</a></p>
-<h2 id="二：SpringCloud的学习目录"><a href="#二：SpringCloud的学习目录" class="headerlink" title="二：SpringCloud的学习目录"></a>二：SpringCloud的学习目录</h2><p> 这个是我自己的学习路线，我会将我最近学习成果一一记录，主要是能巩固自己对SpringCloud的理解与运行</p>
+<p>SpringCloud 官网：<a href="https://spring.io/" target="_blank" rel="noopener">Spring.io</a>以及<a href="https://spring.io/projects/spring-cloud" target="_blank" rel="noopener">SpringCloud 介绍</a></p>
+<p>SpringCloud 中文：<a href="https://www.springcloud.cc/" target="_blank" rel="noopener">中文文档</a></p>
+<h2 id="二：SpringCloud-的学习目录"><a href="#二：SpringCloud-的学习目录" class="headerlink" title="二：SpringCloud 的学习目录"></a>二：SpringCloud 的学习目录</h2><p>这个是我自己的学习路线，我会将我最近学习成果一一记录，主要是能巩固自己对 SpringCloud 的理解与运行</p>
 <ul>
-<li><p>SpringCloud的总架构介绍</p>
+<li><p>SpringCloud 的总架构介绍</p>
 </li>
-<li><p>SpringCloud的服务注册与发现</p>
+<li><p>SpringCloud 的服务注册与发现</p>
 </li>
-<li><p>SpringCloud的消费实现</p>
+<li><p>SpringCloud 的消费实现</p>
 </li>
-<li><p>SpringCloud的断路器实现</p>
+<li><p>SpringCloud 的断路器实现</p>
 <p>这个目录会不断更新……</p>
 </li>
 </ul>
-<h2 id="三：为什么我要学习微服务？"><a href="#三：为什么我要学习微服务？" class="headerlink" title="三：为什么我要学习微服务？"></a>三：为什么我要学习微服务？</h2><p> 这也是我在学习之前问自己的一个问题，我为什么要学微服务，学springcloud……我真的用的上吗？……</p>
-<h4 id="1-为什么要学微服务"><a href="#1-为什么要学微服务" class="headerlink" title="1.为什么要学微服务"></a>1.为什么要学微服务</h4><p> 我个人的话，想分几点回答吧！</p>
-<p> ①微服务是趋势，现在很多公司都想要引入微服务的实现技术</p>
-<p> ②微服务对比单体架构的优点非常明显，在下面我会用问答的方式回答他们的对比</p>
-<p> ③学习微服务能提升自己的技术实力，在搭建的SpringCloud过程中能学一下搭建所用的方法和里面包含的技术</p>
-<p> ④好吧，这个才是重头戏！最近在公司写文档，太无聊了，觉得需要些新东西来刺激一下自己</p>
-<h4 id="2-学springcloud我用的上吗？"><a href="#2-学springcloud我用的上吗？" class="headerlink" title="2.学springcloud我用的上吗？"></a>2.学springcloud我用的上吗？</h4><p> ①这个其实就我这个今年毕业的小菜鸟来说，好像是用不上的，但是作为技术储备，我觉得还是可以好好学习和研究一下的</p>
-<p> ②学习springcloud的同时，我可以在学习的过程中了解微服务的思想，这对于未来的我来说是一个好的东西。</p>
-<p> 希望在学习之前先问自己这些问题，这样能在学习过程不会觉得很乏味，并且充满冲劲！</p>
-<h2 id="四：微服务是什么？"><a href="#四：微服务是什么？" class="headerlink" title="四：微服务是什么？"></a>四：微服务是什么？</h2><p> 好吧，和别的博主一样，在学习一个技术之前，先了解一下这个技术的相关理论知识（为了面试的时候能更好的吹X，能提高自己的谈薪资格……O(∩_∩)O）</p>
-<h3 id="1：微服务是什么呢？"><a href="#1：微服务是什么呢？" class="headerlink" title="1：微服务是什么呢？"></a>1：微服务是什么呢？</h3><p> 我觉得微服务是一种架构风格，模块化系统。</p>
+<h2 id="三：为什么我要学习微服务？"><a href="#三：为什么我要学习微服务？" class="headerlink" title="三：为什么我要学习微服务？"></a>三：为什么我要学习微服务？</h2><p>这也是我在学习之前问自己的一个问题，我为什么要学微服务，学 springcloud……我真的用的上吗？……</p>
+<h4 id="1-为什么要学微服务"><a href="#1-为什么要学微服务" class="headerlink" title="1.为什么要学微服务"></a>1.为什么要学微服务</h4><p>我个人的话，想分几点回答吧！</p>
+<p>① 微服务是趋势，现在很多公司都想要引入微服务的实现技术</p>
+<p>② 微服务对比单体架构的优点非常明显，在下面我会用问答的方式回答他们的对比</p>
+<p>③ 学习微服务能提升自己的技术实力，在搭建的 SpringCloud 过程中能学一下搭建所用的方法和里面包含的技术</p>
+<p>④ 好吧，这个才是重头戏！最近在公司写文档，太无聊了，觉得需要些新东西来刺激一下自己</p>
+<h4 id="2-学-springcloud-我用的上吗？"><a href="#2-学-springcloud-我用的上吗？" class="headerlink" title="2.学 springcloud 我用的上吗？"></a>2.学 springcloud 我用的上吗？</h4><p>① 这个其实就我这个今年毕业的小菜鸟来说，好像是用不上的，但是作为技术储备，我觉得还是可以好好学习和研究一下的</p>
+<p>② 学习 springcloud 的同时，我可以在学习的过程中了解微服务的思想，这对于未来的我来说是一个好的东西。</p>
+<p>希望在学习之前先问自己这些问题，这样能在学习过程不会觉得很乏味，并且充满冲劲！</p>
+<h2 id="四：微服务是什么？"><a href="#四：微服务是什么？" class="headerlink" title="四：微服务是什么？"></a>四：微服务是什么？</h2><p>好吧，和别的博主一样，在学习一个技术之前，先了解一下这个技术的相关理论知识（为了面试的时候能更好的吹 X，能提高自己的谈薪资格……O(∩_∩)O）</p>
+<h3 id="1：微服务是什么呢？"><a href="#1：微服务是什么呢？" class="headerlink" title="1：微服务是什么呢？"></a>1：微服务是什么呢？</h3><p>我觉得微服务是一种架构风格，模块化系统。</p>
 <blockquote>
-<p> Martin Fowler对微服务的描述：<br>​ <em>微服务架构风格是一种将一个单一应用程序开发为一组小型服务的方法，每个服务运行再自己的进程种，服务间通信采用轻量及通信机制（通常用HTTP资源API）。这些服务围绕业务能力构建并且可通过全自动部署机制独立部署。这些服务公用一个最小型的集中式管理，服务可用不同的语言开发，使用不同的数据存储技术。</em></p>
+<p>Martin Fowler 对微服务的描述：<br>​ <em>微服务架构风格是一种将一个单一应用程序开发为一组小型服务的方法，每个服务运行再自己的进程种，服务间通信采用轻量及通信机制（通常用 HTTP 资源 API）。这些服务围绕业务能力构建并且可通过全自动部署机制独立部署。这些服务公用一个最小型的集中式管理，服务可用不同的语言开发，使用不同的数据存储技术。</em></p>
 </blockquote>
-<p> 又臭又长是吧，总结就一句话：</p>
-<p> 将单一的文件项目划分为一组小的服务（模块），每个服务运行在其独立的自己的进程中</p>
-<h3 id="2：微服务架构是什么？"><a href="#2：微服务架构是什么？" class="headerlink" title="2：微服务架构是什么？"></a>2：微服务架构是什么？</h3><p> 一种架构模式，提倡多个小的服务之间相互协调配合，低耦合开发</p>
-<p> 特征：</p>
+<p>又臭又长是吧，总结就一句话：</p>
+<p>将单一的文件项目划分为一组小的服务（模块），每个服务运行在其独立的自己的进程中</p>
+<h3 id="2：微服务架构是什么？"><a href="#2：微服务架构是什么？" class="headerlink" title="2：微服务架构是什么？"></a>2：微服务架构是什么？</h3><p>一种架构模式，提倡多个小的服务之间相互协调配合，低耦合开发</p>
+<p>特征：</p>
 <ul>
 <li>每个微服务可独立运行在自己的进程里</li>
 <li>一系列独立运行的微服务共同构建器整个系统</li>
 <li>每个服务为独立的业务开发，一个微服务只关注某个特定的功能</li>
-<li>微服务之间通过一些轻量的通信机制进行通信，比如：同故宫RestFulApi进行调用</li>
+<li>微服务之间通过一些轻量的通信机制进行通信，比如：同故宫 RestFulApi 进行调用</li>
 <li>可以使用不同的语言与数据存储技术</li>
 <li>全自动的部署机制</li>
 </ul>
-<h3 id="3：微服务的优点是什么？"><a href="#3：微服务的优点是什么？" class="headerlink" title="3：微服务的优点是什么？"></a>3：微服务的优点是什么？</h3><p> 在说微服务的优点之前，先说说单体架构的优缺点</p>
-<h4 id="单体架构："><a href="#单体架构：" class="headerlink" title="单体架构："></a>单体架构：</h4><p> 优点：</p>
+<h3 id="3：微服务的优点是什么？"><a href="#3：微服务的优点是什么？" class="headerlink" title="3：微服务的优点是什么？"></a>3：微服务的优点是什么？</h3><p>在说微服务的优点之前，先说说单体架构的优缺点</p>
+<h4 id="单体架构："><a href="#单体架构：" class="headerlink" title="单体架构："></a>单体架构：</h4><p>优点：</p>
 <ul>
 <li><p>容易测试</p>
 </li>
 <li><p>容易部署</p>
-<p> 缺点：</p>
+<p>缺点：</p>
 </li>
 <li><p>开发效率低</p>
 </li>
@@ -329,19 +329,19 @@
 </li>
 </ul>
 <p>就先写这么多了。之后我会在后面附上相关的面试题，不断积累吧！</p>
-<h2 id="五：微服务的面试题"><a href="#五：微服务的面试题" class="headerlink" title="五：微服务的面试题"></a>五：微服务的面试题</h2><h5 id="1-什么是微服务？"><a href="#1-什么是微服务？" class="headerlink" title="1.什么是微服务？"></a>1.什么是微服务？</h5><p> 微服务英文名称Microservice，Microservice架构模式就是将整个Web应用组织为一系列小的Web服务。这些小的Web服务可以独立地编译及部署，并通过各自暴露的API接口相互通讯。它们彼此相互协作，作为一个整体为用户提供功能，却可以独立地进行扩。</p>
+<h2 id="五：微服务的面试题"><a href="#五：微服务的面试题" class="headerlink" title="五：微服务的面试题"></a>五：微服务的面试题</h2><h5 id="1-什么是微服务？"><a href="#1-什么是微服务？" class="headerlink" title="1.什么是微服务？"></a>1.什么是微服务？</h5><p>微服务英文名称 Microservice，Microservice 架构模式就是将整个 Web 应用组织为一系列小的 Web 服务。这些小的 Web 服务可以独立地编译及部署，并通过各自暴露的 API 接口相互通讯。它们彼此相互协作，作为一个整体为用户提供功能，却可以独立地进行扩。</p>
 <p>微服务架构需要的功能或使用场景</p>
 <p>1：我们把整个系统根据业务拆分成几个子系统。</p>
 <p>2：每个子系统可以部署多个应用，多个应用之间使用负载均衡。</p>
 <p>3：需要一个服务注册中心，所有的服务都在注册中心注册，负载均衡也是通过在注册中心注册的服务来使用一定策略来实现。</p>
-<p>4：所有的客户端都通过同一个网关地址访问后台的服务，通过路由配置，网关来判断一个URL请求由哪个服务处理。请求转发到服务上的时候也使用负载均衡。</p>
+<p>4：所有的客户端都通过同一个网关地址访问后台的服务，通过路由配置，网关来判断一个 URL 请求由哪个服务处理。请求转发到服务上的时候也使用负载均衡。</p>
 <p>5：服务之间有时候也需要相互访问。例如有一个用户模块，其他服务在处理一些业务的时候，要获取用户服务的用户数据。</p>
 <p>6：需要一个断路器，及时处理服务调用时的超时和错误，防止由于其中一个服务的问题而导致整体系统的瘫痪。</p>
 <p>7：还需要一个监控功能，监控每个服务调用花费的时间等。</p>
-<p>目前主流的微服务框架：Dubbo、 SpringCloud、thrift、Hessian等，目前国内的中小企业用的大多数都是Dubbo，SpringCloud。</p>
-<h5 id="2-微服务架构是什么？"><a href="#2-微服务架构是什么？" class="headerlink" title="2.微服务架构是什么？"></a>2.微服务架构是什么？</h5><p> 答案在上面有回答！</p>
-<h5 id="3-微服务的优缺点分别是什么？说下在项目开发中碰到的坑……"><a href="#3-微服务的优缺点分别是什么？说下在项目开发中碰到的坑……" class="headerlink" title="3.微服务的优缺点分别是什么？说下在项目开发中碰到的坑……"></a>3.微服务的优缺点分别是什么？说下在项目开发中碰到的坑……</h5><p> 答案在上面有回答！</p>
-<h5 id="4-你所知道的微服务技术栈有哪些，列举……"><a href="#4-你所知道的微服务技术栈有哪些，列举……" class="headerlink" title="4.你所知道的微服务技术栈有哪些，列举……"></a>4.你所知道的微服务技术栈有哪些，列举……</h5><p><img src="the-learning-notes-by-SpringCloud-preface.assets/Microservice-technology-stack-1584796272503.jpg" alt=""></p>
+<p>目前主流的微服务框架：Dubbo、 SpringCloud、thrift、Hessian 等，目前国内的中小企业用的大多数都是 Dubbo，SpringCloud。</p>
+<h5 id="2-微服务架构是什么？"><a href="#2-微服务架构是什么？" class="headerlink" title="2.微服务架构是什么？"></a>2.微服务架构是什么？</h5><p>答案在上面有回答！</p>
+<h5 id="3-微服务的优缺点分别是什么？说下在项目开发中碰到的坑……"><a href="#3-微服务的优缺点分别是什么？说下在项目开发中碰到的坑……" class="headerlink" title="3.微服务的优缺点分别是什么？说下在项目开发中碰到的坑……"></a>3.微服务的优缺点分别是什么？说下在项目开发中碰到的坑……</h5><p>答案在上面有回答！</p>
+<h5 id="4-你所知道的微服务技术栈有哪些，列举……"><a href="#4-你所知道的微服务技术栈有哪些，列举……" class="headerlink" title="4.你所知道的微服务技术栈有哪些，列举……"></a>4.你所知道的微服务技术栈有哪些，列举……</h5><p><img src="../../../../images/2019_10_23_01/Microservice-technology-stack-1584796272503.jpg" alt="Microservice-technology-stack"></p>
 ]]></content>
       <categories>
         <category>SpringCloud</category>
@@ -405,106 +405,82 @@
       </tags>
   </entry>
   <entry>
-    <title>我的第一篇博客</title>
-    <url>/2019/10/16/My-First-Blog/</url>
-    <content><![CDATA[<p>第一篇博客先来简单聊两句：</p>
-<h3 id="一：写博客的目的"><a href="#一：写博客的目的" class="headerlink" title="一：写博客的目的"></a>一：写博客的目的</h3><p> 在创建博客的道路上的我其实是被自愿的！如果能躺在荣华富贵，我也不用如此努力的提升自己。</p>
-<p> 当然这都是开玩笑的啦！博客的目的其实是想记录一下自己的成长之路。希望未来的自己能看到自己不断向上的过程同时也能将自己遇到的问题或者遇到的好的东西分享给大家！共同进步嘛……</p>
-<a id="more"></a>
-
-<h3 id="二：写博客的意义"><a href="#二：写博客的意义" class="headerlink" title="二：写博客的意义"></a>二：写博客的意义</h3><p> 记录自己在学习成长的过程！将这个过程分享给大家。</p>
-<p> 我很懒！希望写博客能让我在学习的事情上坚持下来（为了不让博客空空的……）</p>
-<h3 id="三：写博客的内容："><a href="#三：写博客的内容：" class="headerlink" title="三：写博客的内容："></a>三：写博客的内容：</h3><p> 作为一个普普通通的小软件开发工程师，我会把我学习的内容记录到博客里，当然我学习的内容也不是只有开发，还会有其他的……</p>
-<p>最后呢！感谢大家能看到这个博客的内容！</p>
-<hr>
-<p> 开启我的博客之路啦……</p>
-]]></content>
-      <categories>
-        <category>life</category>
-      </categories>
-      <tags>
-        <tag>life</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>记录创建Github-blog过程</title>
     <url>/2019/10/16/the-process-of-record-create-github-blog/</url>
     <content><![CDATA[<p>现在我来记录一下我创建这个博客的过程……</p>
-<h2 id="一：简介"><a href="#一：简介" class="headerlink" title="一：简介"></a>一：简介</h2><p> 使用<a href="https://github.com/" target="_blank" rel="noopener">github</a>来搭建个人博客</p>
-<p> 当然要先简单了解<a href="https://pages.github.com/" target="_blank" rel="noopener">github page</a></p>
-<p> 虽然官方推荐使用Jekyll+github 的方式来创建网页，但我选择使用Hexo+github来搭建自己的博客网站，现在来记录一下我的搭建过程！</p>
+<h2 id="一：简介"><a href="#一：简介" class="headerlink" title="一：简介"></a>一：简介</h2><p>使用<a href="https://github.com/" target="_blank" rel="noopener">github</a>来搭建个人博客</p>
+<p>当然要先简单了解<a href="https://pages.github.com/" target="_blank" rel="noopener">github page</a></p>
+<p>虽然官方推荐使用 Jekyll+github 的方式来创建网页，但我选择使用 Hexo+github 来搭建自己的博客网站，现在来记录一下我的搭建过程！</p>
 <a id="more"></a>
 
-<h3 id="1：环境搭建—nodejs，git"><a href="#1：环境搭建—nodejs，git" class="headerlink" title="1：环境搭建—nodejs，git"></a>1：环境搭建—nodejs，git</h3><p> 首先得进行环境搭建</p>
-<p> ①<a href="http://nodejs.cn/" target="_blank" rel="noopener">nodejs</a>安装：nodejs就是搭建博客前端的基础</p>
-<p> <a href="https://www.runoob.com/nodejs/nodejs-install-setup.html" target="_blank" rel="noopener">安装流程</a></p>
-<p> ②<a href="https://git-scm.com/" target="_blank" rel="noopener">git</a>安装：git是搭建博客与github的连接</p>
-<p> <a href="https://www.runoob.com/git/git-install-setup.html" target="_blank" rel="noopener">安装流程</a></p>
-<p> 最后介绍我搭建的电脑环境：</p>
+<h3 id="1：环境搭建—nodejs，git"><a href="#1：环境搭建—nodejs，git" class="headerlink" title="1：环境搭建—nodejs，git"></a>1：环境搭建—nodejs，git</h3><p>首先得进行环境搭建</p>
+<p>①<a href="http://nodejs.cn/" target="_blank" rel="noopener">nodejs</a>安装：nodejs 就是搭建博客前端的基础</p>
+<p><a href="https://www.runoob.com/nodejs/nodejs-install-setup.html" target="_blank" rel="noopener">安装流程</a></p>
+<p>②<a href="https://git-scm.com/" target="_blank" rel="noopener">git</a>安装：git 是搭建博客与 github 的连接</p>
+<p><a href="https://www.runoob.com/git/git-install-setup.html" target="_blank" rel="noopener">安装流程</a></p>
+<p>最后介绍我搭建的电脑环境：</p>
 <ul>
 <li>Win10</li>
 <li><a href="mailto:node@v10.16.0">node@v10.16.0</a></li>
 <li><a href="mailto:npm@6.9.0">npm@6.9.0</a></li>
 <li><a href="mailto:git@2.23.0">git@2.23.0</a></li>
 </ul>
-<h3 id="2：准备github账号"><a href="#2：准备github账号" class="headerlink" title="2：准备github账号"></a>2：准备github账号</h3><p> ①没有github账号：进入<a href="https://github.com/" target="_blank" rel="noopener">github</a>官网进行<a href="https://github.com/join?source=header-home" target="_blank" rel="noopener">注册</a>（<a href="https://jingyan.baidu.com/article/86fae346e723303c49121abb.html" target="_blank" rel="noopener">教程</a>）</p>
-<p> ②有github账号：直接登录进入你的<a href="https://github.com/" target="_blank" rel="noopener">github</a></p>
-<h2 id="三：搭建github博客"><a href="#三：搭建github博客" class="headerlink" title="三：搭建github博客"></a>三：搭建github博客</h2><h3 id="1：在Github创建仓库"><a href="#1：在Github创建仓库" class="headerlink" title="1：在Github创建仓库"></a>1：在Github创建仓库</h3><p> 登录进你的github</p>
-<p> 首页右上角头像那里有一个“+”号，点击后选择“New repositor”。</p>
-<p><img src="the-process-of-record-create-github-blog.assets/new_repositor_no_1.png" alt="new_repositor_no_1"></p>
-<p> 进入到仓库创建页面</p>
-<p><img src="the-process-of-record-create-github-blog.assets/create_repositor_no_1.png" alt="create_repositor_no_1"></p>
-<p> 创建完之后点击“Settings”</p>
-<p><img src="the-process-of-record-create-github-blog.assets/click_settings_no_1.png" alt="click_settings_no_1"></p>
-<p> 往下拉找到GitHub Pages，查看你的博客地址，仓库创建完成！</p>
-<p><img src="the-process-of-record-create-github-blog.assets/find_github_pages_no_1.png" alt="find_github_pages_no_1"></p>
-<h3 id="2：搭建Hexo"><a href="#2：搭建Hexo" class="headerlink" title="2：搭建Hexo"></a>2：搭建Hexo</h3><p> 目前支持Markdown的博客工具中，我知道的比较火的有Jekyll和Hexo。</p>
-<p> Jekyll流行是因为官方推荐使用，配合Github开发可定制程度非常高。</p>
-<p> Hexo则胜在依赖较少只需要安装node就够了（没错，是我太懒，另一个原因是我的伙伴也都用hexo）。</p>
-<p> 那就敲定了我的博客是hexo+github来搭建！</p>
-<h4 id="1：安装Hexo"><a href="#1：安装Hexo" class="headerlink" title="1：安装Hexo"></a>1：安装<a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a></h4><p> 先找好一个你要创建hexo文件的地方，例如：</p>
-<p><img src="the-process-of-record-create-github-blog.assets/1571379168338.png" alt="1571379168338"></p>
-<p> <em>（好吧！我就直接在我的D盘新建了一个hexo的文件夹就将Hexo安装进去了）</em></p>
-<p> 在安装好node之后可以打开cmd（命令行操作），先进入到你新建的文件夹中，再执行以下命令：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> npm install hexo-cli -g</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> hexo init </span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> hexo g</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> hexo s</span></span><br></pre></td></tr></table></figure>
+<h3 id="2：准备-github-账号"><a href="#2：准备-github-账号" class="headerlink" title="2：准备 github 账号"></a>2：准备 github 账号</h3><p>① 没有 github 账号：进入<a href="https://github.com/" target="_blank" rel="noopener">github</a>官网进行<a href="https://github.com/join?source=header-home" target="_blank" rel="noopener">注册</a>（<a href="https://jingyan.baidu.com/article/86fae346e723303c49121abb.html" target="_blank" rel="noopener">教程</a>）</p>
+<p>② 有 github 账号：直接登录进入你的<a href="https://github.com/" target="_blank" rel="noopener">github</a></p>
+<h2 id="三：搭建-github-博客"><a href="#三：搭建-github-博客" class="headerlink" title="三：搭建 github 博客"></a>三：搭建 github 博客</h2><h3 id="1：在-Github-创建仓库"><a href="#1：在-Github-创建仓库" class="headerlink" title="1：在 Github 创建仓库"></a>1：在 Github 创建仓库</h3><p>登录进你的 github</p>
+<p>首页右上角头像那里有一个“+”号，点击后选择“New repositor”。</p>
+<p><img src="../../../../images/2019_10_16_01/new_repositor_no_1.png" alt="new_repositor_no_1"></p>
+<p>进入到仓库创建页面</p>
+<p><img src="../../../../images/2019_10_16_01/create_repositor_no_1.png" alt="create_repositor_no_1"></p>
+<p>创建完之后点击“Settings”</p>
+<p><img src="../../../../images/2019_10_16_01/click_settings_no_1.png" alt="click_settings_no_1"></p>
+<p>往下拉找到 GitHub Pages，查看你的博客地址，仓库创建完成！</p>
+<p><img src="../../../../images/2019_10_16_01/find_github_pages_no_1.png" alt="find_github_pages_no_1"></p>
+<h3 id="2：搭建-Hexo"><a href="#2：搭建-Hexo" class="headerlink" title="2：搭建 Hexo"></a>2：搭建 Hexo</h3><p>目前支持 Markdown 的博客工具中，我知道的比较火的有 Jekyll 和 Hexo。</p>
+<p>Jekyll 流行是因为官方推荐使用，配合 Github 开发可定制程度非常高。</p>
+<p>Hexo 则胜在依赖较少只需要安装 node 就够了（没错，是我太懒，另一个原因是我的伙伴也都用 hexo）。</p>
+<p>那就敲定了我的博客是 hexo+github 来搭建！</p>
+<h4 id="1：安装Hexo"><a href="#1：安装Hexo" class="headerlink" title="1：安装Hexo"></a>1：安装<a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a></h4><p>先找好一个你要创建 hexo 文件的地方，例如：</p>
+<p><img src="../../../../images/2019_10_16_01/1571379168338.png" alt="1571379168338"></p>
+<p><em>（好吧！我就直接在我的 D 盘新建了一个 hexo 的文件夹就将 Hexo 安装进去了）</em></p>
+<p>在安装好 node 之后可以打开 cmd（命令行操作），先进入到你新建的文件夹中，再执行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> npm install hexo-cli -g</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> hexo init</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> hexo g</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> hexo s</span></span><br></pre></td></tr></table></figure>
 
-<p> 这些操作完了之后，可以看到 <a href="http://localhost:4000/" target="_blank" rel="noopener">http://localhost:4000</a>，点击进去就可以查看了。关于Hexo的语法点击<a href="https://hexo.io/docs/commands.html" target="_blank" rel="noopener">这里</a>。</p>
-<h4 id="2：配置SSH-Key"><a href="#2：配置SSH-Key" class="headerlink" title="2：配置SSH Key"></a>2：配置SSH Key</h4><p> 使用SSH Key解决本地和服务器连接。</p>
-<h5 id="①本地生成key"><a href="#①本地生成key" class="headerlink" title="①本地生成key"></a>①本地生成key</h5><p> 首先进入cmd，输入以下命令</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ~/.ssh</span></span><br><span class="line"><span class="meta">#</span><span class="bash">检查本机是否已经存指ssh密钥</span></span><br><span class="line"><span class="meta">#</span><span class="bash">如果提示<span class="string">"No such file or directory"</span>则说明本机原来没有生成过ssh</span></span><br><span class="line"><span class="meta">#</span><span class="bash">如果进去了则可以跳过下面的生成key命令</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ssh-keygen -t rsa -C <span class="string">"你的Github登录账号(登录邮箱)"</span> </span></span><br><span class="line"><span class="meta">#</span><span class="bash">生成新的key文件</span></span><br><span class="line"><span class="meta">#</span><span class="bash">完成后则生成ssh</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cat ~/.ssh/id_rsa.pub <span class="comment">#获取你生成的key</span></span></span><br></pre></td></tr></table></figure>
+<p>这些操作完了之后，可以看到 <a href="http://localhost:4000/" target="_blank" rel="noopener">http://localhost:4000</a>，点击进去就可以查看了。关于 Hexo 的语法点击<a href="https://hexo.io/docs/commands.html" target="_blank" rel="noopener">这里</a>。</p>
+<h4 id="2：配置-SSH-Key"><a href="#2：配置-SSH-Key" class="headerlink" title="2：配置 SSH Key"></a>2：配置 SSH Key</h4><p>使用 SSH Key 解决本地和服务器连接。</p>
+<h5 id="①-本地生成-key"><a href="#①-本地生成-key" class="headerlink" title="① 本地生成 key"></a>① 本地生成 key</h5><p>首先进入 cmd，输入以下命令</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ~/.ssh</span></span><br><span class="line"><span class="meta">#</span><span class="bash">检查本机是否已经存指ssh密钥</span></span><br><span class="line"><span class="meta">#</span><span class="bash">如果提示<span class="string">"No such file or directory"</span>则说明本机原来没有生成过ssh</span></span><br><span class="line"><span class="meta">#</span><span class="bash">如果进去了则可以跳过下面的生成key命令</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ssh-keygen -t rsa -C <span class="string">"你的Github登录账号(登录邮箱)"</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">生成新的key文件</span></span><br><span class="line"><span class="meta">#</span><span class="bash">完成后则生成ssh</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cat ~/.ssh/id_rsa.pub <span class="comment">#获取你生成的key</span></span></span><br></pre></td></tr></table></figure>
 
-<p><img src="the-process-of-record-create-github-blog.assets/get_cat_ssh_key_no_1.png" alt="get_cat_ssh_key_no_1"></p>
-<p> ②将生成的key配置到github</p>
-<p> 先点击你github首页右上角的头像，然后往下找到settings</p>
-<p><img src="the-process-of-record-create-github-blog.assets/click_github_settings_no_1.png" alt="click_github_settings_no_1"></p>
-<p> 点击进入到你的配置页面，找到并打开SSH and GPS keys，然后点击右边的new SSH Key</p>
-<p><img src="the-process-of-record-create-github-blog.assets/ssh_key_settings_no_1.png" alt="ssh_key_settings_no_1"></p>
-<p> 然后添加你在上面生成的key，从ssh-rsa……整段复制过来，然后就完成了key配置了！</p>
-<p><img src="the-process-of-record-create-github-blog.assets/add_ssh_key_no_1.png" alt="add_ssh_key_no_1"></p>
-<p> 最后再测试一下key是否关联成功</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh -T git@github.com  </span></span><br><span class="line"><span class="meta">#</span><span class="bash">当出现Are you sure you want to <span class="built_in">continue</span> connecting (yes/no)?</span></span><br><span class="line"><span class="meta">#</span><span class="bash">选择Yes，则出现有successfully的一段话就说明SSH Key配置成功！</span></span><br></pre></td></tr></table></figure>
+<p><img src="../../../../images/2019_10_16_01/get_cat_ssh_key_no_1.png" alt="get_cat_ssh_key_no_1"></p>
+<p>② 将生成的 key 配置到 github</p>
+<p>先点击你 github 首页右上角的头像，然后往下找到 settings</p>
+<p><img src="../../../../images/2019_10_16_01/click_github_settings_no_1.png" alt="click_github_settings_no_1"></p>
+<p>点击进入到你的配置页面，找到并打开 SSH and GPS keys，然后点击右边的 new SSH Key</p>
+<p><img src="../../../../images/2019_10_16_01/ssh_key_settings_no_1.png" alt="ssh_key_settings_no_1"></p>
+<p>然后添加你在上面生成的 key，从 ssh-rsa……整段复制过来，然后就完成了 key 配置了！</p>
+<p><img src="../../../../images/2019_10_16_01/add_ssh_key_no_1.png" alt="add_ssh_key_no_1"></p>
+<p>最后再测试一下 key 是否关联成功</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh -T git@github.com</span></span><br><span class="line"><span class="meta">#</span><span class="bash">当出现Are you sure you want to <span class="built_in">continue</span> connecting (yes/no)?</span></span><br><span class="line"><span class="meta">#</span><span class="bash">选择Yes，则出现有successfully的一段话就说明SSH Key配置成功！</span></span><br></pre></td></tr></table></figure>
 
+<h4 id="3：配置-Hexo-和-git-的连接"><a href="#3：配置-Hexo-和-git-的连接" class="headerlink" title="3：配置 Hexo 和 git 的连接"></a>3：配置 Hexo 和 git 的连接</h4><p>打开你创建的 hexo 文件夹，找到里面的_config.yml 文件，使用开发工具打开（我使用的是 InteliJ 的 WebStorm）,配置以下代码</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">git</span></span><br><span class="line"><span class="attr">repository:</span> <span class="string">https://github.com/你的GitHub名称/你的项目库名称.github.io.git</span></span><br><span class="line"><span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
 
-
-<h4 id="3：配置Hexo和git的连接"><a href="#3：配置Hexo和git的连接" class="headerlink" title="3：配置Hexo和git的连接"></a>3：配置Hexo和git的连接</h4><p> 打开你创建的hexo文件夹，找到里面的_config.yml文件，使用开发工具打开（我使用的是InteliJ的WebStorm）,配置以下代码</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span>  </span><br><span class="line"><span class="attr">type:</span> <span class="string">git</span>  </span><br><span class="line"><span class="attr">repository:</span> <span class="string">https://github.com/你的GitHub名称/你的项目库名称.github.io.git</span>  </span><br><span class="line"><span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
-
-<p> 然后再刷新提交你的Hexo代码，再git Bash里输入以下代码，不报错则说明你的个人博客已经搭建好了！</p>
+<p>然后再刷新提交你的 Hexo 代码，再 git Bash 里输入以下代码，不报错则说明你的个人博客已经搭建好了！</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hexo g <span class="comment">#生成</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> hexo d <span class="comment">#代码提交</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 想先本地演示的话可以先 hexo s</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="四：博客完成"><a href="#四：博客完成" class="headerlink" title="四：博客完成"></a>四：博客完成</h2><p> 到这里说明你的博客已经搭建完成了！最后来看看我们的成果吧！</p>
-<h3 id="1：完成效果"><a href="#1：完成效果" class="headerlink" title="1：完成效果"></a>1：完成效果</h3><p> 第一次出现的效果一般都为这样啦</p>
-<p><img src="the-process-of-record-create-github-blog.assets/first_open_blog_by_hexo_no_1.png" alt="first_open_blog_by_hexo_no_1"></p>
-<h3 id="2：博客编写"><a href="#2：博客编写" class="headerlink" title="2：博客编写"></a>2：博客编写</h3><p> 现在我们来写一次博客，（我第一次写博客也是迷糊的很……）</p>
-<p> ①创建一个<a href="https://hexo.io/docs/writing" target="_blank" rel="noopener">新的文章</a>，创建完之后会在你的文件夹里/source/_post/下生成你创建的md文本</p>
+<h2 id="四：博客完成"><a href="#四：博客完成" class="headerlink" title="四：博客完成"></a>四：博客完成</h2><p>到这里说明你的博客已经搭建完成了！最后来看看我们的成果吧！</p>
+<h3 id="1：完成效果"><a href="#1：完成效果" class="headerlink" title="1：完成效果"></a>1：完成效果</h3><p>第一次出现的效果一般都为这样啦</p>
+<p><img src="../../../../images/2019_10_16_01/first_open_blog_by_hexo_no_1.png" alt="first_open_blog_by_hexo_no_1"></p>
+<h3 id="2：博客编写"><a href="#2：博客编写" class="headerlink" title="2：博客编写"></a>2：博客编写</h3><p>现在我们来写一次博客，（我第一次写博客也是迷糊的很……）</p>
+<p>① 创建一个<a href="https://hexo.io/docs/writing" target="_blank" rel="noopener">新的文章</a>，创建完之后会在你的文件夹里/source/_post/下生成你创建的 md 文本</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hexo new &lt;post&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p> ②使用支持<a href="https://guides.github.com/features/mastering-markdown/" target="_blank" rel="noopener">Markdown</a>文本编辑工具进行文章编辑（我使用的是Typora，更方便编辑，当然webStorm也可以）</p>
+<p>② 使用支持<a href="https://guides.github.com/features/mastering-markdown/" target="_blank" rel="noopener">Markdown</a>文本编辑工具进行文章编辑（我使用的是 Typora，更方便编辑，当然 webStorm 也可以）</p>
 <hr>
 <h2 id="鸣谢支持"><a href="#鸣谢支持" class="headerlink" title="鸣谢支持"></a>鸣谢支持</h2><p><a href="https://www.cnblogs.com/liuxianan/p/build-blog-website-by-hexo-github.html" target="_blank" rel="noopener">小茗同学的博客园</a></p>
 <p><a href="https://asdfv1929.github.io/2017/11/18/hexo-next-blog/" target="_blank" rel="noopener">asdfbv1929</a></p>
-<p> 额(⊙﹏⊙)！第一次写那么长的博客文章，有很多不懂的地方，效率也挺低的（写了两天……,,ԾㅂԾ,,）</p>
-<p> 但我相信我能不断提高自己的啦！时不时的来更新我的学习生活，gogogo……</p>
+<p>额(⊙﹏⊙)！第一次写那么长的博客文章，有很多不懂的地方，效率也挺低的（写了两天……,,ԾㅂԾ,,）</p>
+<p>但我相信我能不断提高自己的啦！时不时的来更新我的学习生活，gogogo……</p>
 ]]></content>
       <categories>
         <category>hexo</category>
@@ -512,6 +488,28 @@
       <tags>
         <tag>hexo</tag>
         <tag>blog</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>我的第一篇博客</title>
+    <url>/2019/10/16/My-First-Blog/</url>
+    <content><![CDATA[<p>第一篇博客先来简单聊两句：</p>
+<h3 id="一：写博客的目的"><a href="#一：写博客的目的" class="headerlink" title="一：写博客的目的"></a>一：写博客的目的</h3><p>在创建博客的道路上的我其实是被自愿的！如果能躺在荣华富贵，我也不用如此努力的提升自己。</p>
+<p>当然这都是开玩笑的啦！博客的目的其实是想记录一下自己的成长之路。希望未来的自己能看到自己不断向上的过程同时也能将自己遇到的问题或者遇到的好的东西分享给大家！共同进步嘛……</p>
+<a id="more"></a>
+
+<h3 id="二：写博客的意义"><a href="#二：写博客的意义" class="headerlink" title="二：写博客的意义"></a>二：写博客的意义</h3><p>记录自己在学习成长的过程！将这个过程分享给大家。</p>
+<p>我很懒！希望写博客能让我在学习的事情上坚持下来（为了不让博客空空的……）</p>
+<h3 id="三：写博客的内容："><a href="#三：写博客的内容：" class="headerlink" title="三：写博客的内容："></a>三：写博客的内容：</h3><p>作为一个普普通通的小软件开发工程师，我会把我学习的内容记录到博客里，当然我学习的内容也不是只有开发，还会有其他的……</p>
+<p>最后呢！感谢大家能看到这个博客的内容！</p>
+<hr>
+<p>开启我的博客之路啦……</p>
+]]></content>
+      <categories>
+        <category>life</category>
+      </categories>
+      <tags>
+        <tag>life</tag>
       </tags>
   </entry>
   <entry>
