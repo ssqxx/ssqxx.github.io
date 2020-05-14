@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="网络模型 各层的关系 每一个抽象层建立在低一层提供的服务上，并且为高一层提供服务。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="http&#x2F;tcp协议基础">
+<meta property="og:url" content="http://yoursite.com/2020/04/14/http-tcp-ip-base/index.html">
+<meta property="og:site_name" content="ssqxx-博客">
+<meta property="og:description" content="网络模型 各层的关系 每一个抽象层建立在低一层提供的服务上，并且为高一层提供服务。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/images/2020_04_14_01/network_model.jpg">
+<meta property="og:image" content="http://yoursite.com/images/2020_04_14_01/http_structure_chart.jpg">
+<meta property="og:image" content="http://yoursite.com/images/2020_04_14_01/transmit.png">
+<meta property="og:image" content="http://yoursite.com/images/2020_04_14_01/handshake_with_wave.jpeg">
+<meta property="og:image" content="http://yoursite.com/images/2020_04_14_01/theory.png">
+<meta property="og:image" content="http://yoursite.com/images/2020_04_14_01/network_model_summary.jpg">
+<meta property="article:published_time" content="2020-04-14T07:58:29.000Z">
+<meta property="article:modified_time" content="2020-05-14T11:08:17.690Z">
+<meta property="article:author" content="ssqxx">
+<meta property="article:tag" content="http">
+<meta property="article:tag" content="tcp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/images/2020_04_14_01/network_model.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/14/http-tcp-ip-base/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>http/tcp协议基础 | ssqxx-博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ssqxx-博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">ssqxx的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/14/http-tcp-ip-base/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author/good_lucky.jpg">
+      <meta itemprop="name" content="ssqxx">
+      <meta itemprop="description" content="ssqxx-记录技术成长的历程">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ssqxx-博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          http/tcp协议基础
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-14 15:58:29" itemprop="dateCreated datePublished" datetime="2020-04-14T15:58:29+08:00">2020-04-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-14 19:08:17" itemprop="dateModified" datetime="2020-05-14T19:08:17+08:00">2020-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/http/" itemprop="url" rel="index"><span itemprop="name">http</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="网络模型"><a href="#网络模型" class="headerlink" title="网络模型"></a>网络模型</h2><p><img src="../../../../images/2020_04_14_01/network_model.jpg" alt="network_model"></p>
+<p>各层的关系</p>
+<p>每一个抽象层建立在低一层提供的服务上，并且为高一层提供服务。</p>
+<a id="more"></a>
+
+<h2 id="HTTP协议"><a href="#HTTP协议" class="headerlink" title="HTTP协议"></a>HTTP协议</h2><p><img src="../../../../images/2020_04_14_01/http_structure_chart.jpg" alt="http_structure_chart"></p>
+<h4 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h4><p><strong>HTTP协议是一个无状态的，应用层级的超文本传输协议（Hyper Text Transfer Protocol）</strong></p>
+<ul>
+<li>HTTP是用于从WWW服务器传输超文本到本地浏览器的传送协议；不仅保证计算机正确快速的传输超文本文档，还确定传输文档中的内容，以及确定内容的优先显示等。</li>
+<li>HTTP是一个应用层协议，有请求和相应构成，是一个标准的客户端服务模型。</li>
+<li>HTTP是一个无状态的协议，同一个客户端的这次请求和上次请求时没有对应关系的。</li>
+<li>默认HTTP的端口为80；HTTPS的默认端口为443。</li>
+<li>HTTP协议永远时客户端发起请求，服务端回送响应。</li>
+</ul>
+<h4 id="HTTP事务工作过程"><a href="#HTTP事务工作过程" class="headerlink" title="HTTP事务工作过程"></a>HTTP事务工作过程</h4><p>工作过程有以下四步：</p>
+<ol>
+<li>首先客户端与服务器需要建立连接。只要单击某个超级链接，HTTP的工作开始。</li>
+<li>建立连接后，客户端发送一个请求给服务器。请求方式的格式为：<u>统一资源标识符（URI）、协议版本号、MIME信息（包括请求修饰符、客户端信息和可能的内容）</u></li>
+<li>服务器接到请求后，给予相应的响应信息。</li>
+<li>客户端接收到服务器所返回的信息，通过浏览器显示在用户的显示屏上，然后客户端与服务器断开连接。</li>
+</ol>
+<h4 id="HTTP的优点"><a href="#HTTP的优点" class="headerlink" title="HTTP的优点"></a>HTTP的优点</h4><ul>
+<li>简单快捷。HTTP协议简单，通信速度快。</li>
+<li>灵活。HTTP协议允许传输任意类型的数据</li>
+<li>短链接。HTTP协议限制每次连接只处理一个请求，服务器对客户端的请求作出响应后，马上断开连接。这种传输方式可以节省传输时间。</li>
+</ul>
+<h4 id="HTTP请求方式"><a href="#HTTP请求方式" class="headerlink" title="HTTP请求方式"></a>HTTP请求方式</h4><p><strong>常用的请求方式：GET/POST</strong></p>
+<ol>
+<li>GET方式： 是以实体的方式得到由请求URI所指定资源的信息。</li>
+<li>POST方式： 用来向目的服务器发出请求，要求它接受被附在请求后的实体。</li>
+</ol>
+<h4 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h4><p>HTTPS：是HTTP的安全版。HTTP下加入SSL层，HTTPS的安全基础就是SSL。</p>
+<h4 id="状态码"><a href="#状态码" class="headerlink" title="状态码"></a>状态码</h4><p><strong>状态码分为客户端错误状态码、服务端错误状态码、成功状态码、重定向状态码等。</strong></p>
+<ul>
+<li>1**类状态码：Information状态码，表示信息正在处理。</li>
+<li>2**类状态码：Success状态码，表示请求正常完成。</li>
+<li>3**类状态码：Redirection状态码，表示需要客户端进行附加操作（如跳转、重定向）。</li>
+<li>4**类状态码：Error状态码，通常是由于客户端的错误导致的。</li>
+<li>5**类状态码：SeverError状态码，通常是服务端的错误导致的。</li>
+</ul>
+<h2 id="TCP-IP系列协议"><a href="#TCP-IP系列协议" class="headerlink" title="TCP/IP系列协议"></a>TCP/IP系列协议</h2><p>TCP/IP是internet最基本的协议，把所有TCP/IP系列协议归类到四个抽象层中。</p>
+<h4 id="传输"><a href="#传输" class="headerlink" title="传输"></a>传输</h4><p><img src="../../../../images/2020_04_14_01/transmit.png" alt="transmit"></p>
+<ul>
+<li>TCP 面向连接的、可靠的流协议；</li>
+<li>UDP  面向无连接的通讯协议；</li>
+<li>IP    在源地址和目的地址之间传送的数据包；</li>
+<li>ICMP 控制报文协议；</li>
+<li>IGMP internet组管理协议；</li>
+<li>ARP 地址解析协议；</li>
+<li>RARP 反向地址转化协议</li>
+</ul>
+<h4 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h4><ul>
+<li>建立一个TCP连接需要经过“三次握手”。TCP三次握手具体过程如下：</li>
+</ul>
+<ol>
+<li>第一次握手：客户端发送syn包（syn=j）到服务器，并进入SYN_SEND状态。等待服务器确认。</li>
+<li>第二次握手：服务器收到syn包，必须确认客户的SYN（ack=j+1），同时自己也发送一个SYN包（syn=k），即SYN+ACK包，此时服务器进入SYN_RECV状态。</li>
+<li>第三次握手：客户端接收到服务器的SYN_ACK包，向服务器发送确认包ACK（ack=k+1），包发送完毕，客户端和服务器进入ESTABLISHED状态，完成三次握手。</li>
+</ol>
+<ul>
+<li><strong>握手过程中，传送的包里不包含数据，三次握手完毕后，客户端与服务器正式开始传送数据。理想状态下，TCP连接一旦建立，在通信双方中的任何一方主动关闭连接之前，TCP连接都将被一直保持下去。断开连接时服务器和客户端均可以主动发起断开TCP连接的请求，断开过程需要经过“四次握手”。</strong></li>
+<li><strong>SYN（synchronous）是TCP建立连接时使用的握手信号；ACK（acknowledge）即确认字符，在数据通信中，接收站发给发送站的一种传输类控制字符，表示发来的数据已确认接收无误。</strong></li>
+<li><u>如果两次握手会怎么样呢？</u></li>
+</ul>
+<h5 id="理解题意：就是客户端为什么还要发送一次确认呢？"><a href="#理解题意：就是客户端为什么还要发送一次确认呢？" class="headerlink" title="理解题意：就是客户端为什么还要发送一次确认呢？"></a>理解题意：就是客户端为什么还要发送一次确认呢？</h5><p>答：为了防止已经失效的连接请求报文又突然传送到了服务器，而产生错误。假设一种异常，客户端发出的请求由于网络阻塞没有及时到达服务器，后又重传请求，之后服务器相应了，切建立了连接，之后连接又释放了。此时假设客户端发出的第一个请求到达服务器，服务器误以为是客户端再次请求连接，服务器建立连接，如果采用两次握手，此时连接建立，而客户端又不发送数据，浪费了服务器的资源。</p>
+<h4 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h4><ul>
+<li>与建立连接的“三次握手”类似，断开一个TCP连接则需要“四次握手”。</li>
+</ul>
+<ol>
+<li>第一次挥手：主动关闭方发送一个FIN，用来关闭主动方到被动关闭方的数据传送，也就是主动关闭方告诉被动关闭方：我已经不会再给你发送数据了。</li>
+<li>第二次挥手：被动关闭方接收到FIN包后，发送一个ACK给对方，确认序号为收到序列+1。</li>
+<li>第三次挥手：被动关闭方发送一个FIN，用来关闭被动关闭方到主动关闭方的数据传送，也就是告诉主动关闭方，我的数据也发送完了，不会再给你发数据了。</li>
+<li>第四次挥手：主动关闭方收到FIN后，发送一个ACK给被动关闭方，确认序列为收到序列号+1。至此，完成四次握手。</li>
+</ol>
+<h4 id="握手与挥手图示"><a href="#握手与挥手图示" class="headerlink" title="握手与挥手图示"></a>握手与挥手图示</h4><p><img src="../../../../images/2020_04_14_01/handshake_with_wave.jpeg" alt="handshake_with_wave"></p>
+<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p><img src="../../../../images/2020_04_14_01/theory.png" alt="theory"></p>
+<ol>
+<li><p>Socket套接字：TCP用主机的IP地址加上主机上的端口号作为TCP连接的端点，这种端点就叫做套接字（socket）。</p>
+</li>
+<li><p>TCP缓冲区：每个TCP的Socket的内核中都有一个发送缓冲区和一个接受缓冲区。</p>
+</li>
+<li><p>阻塞模式</p>
+<p>A.接收端缓冲区为空，接收端调用read方法的线程阻塞。</p>
+<p>B.发送端缓存区满了或者不够大，发送端调用write方法的线程阻塞。</p>
+</li>
+<li><p>TCP的可靠性与高效率——滑动窗口</p>
+<p>A.滑动窗口：发送方和接收方都会维护一个数据帧的序列，这个序列称作为窗口。</p>
+<p>B.发送方的窗口大小由接收方确认</p>
+<p>C.目的</p>
+<ol>
+<li>确保数据不丢失：如果发送的数据丢失了可重新发</li>
+<li>控制发送速度：控制发送速度，以免接收方的缓存区不够大导致溢出，同时控制流量也可以避免网络拥塞。</li>
+</ol>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><img src="../../../../images/2020_04_14_01/network_model_summary.jpg" alt="network_model_summary"></p>
+<h4 id="TCP-IP与HTTP的区别"><a href="#TCP-IP与HTTP的区别" class="headerlink" title="TCP/IP与HTTP的区别"></a>TCP/IP与HTTP的区别</h4><ol>
+<li>TCP/IP协议（Transmission Control Protocol/Internet Protocol）：是传输层协议。主要解决数据如何在网络中传输。</li>
+<li>HTTP：是请求响应模式，是应用层协议。主要解决如何包装数据。</li>
+<li>Web使用HTTP协议作为应用层协议，以封装http文本信息，然后使用TCP/IP做传输层协议将它发送到网络上。HTTP是利用TCP在两台电脑（通常是web服务器和客户端）之间传输信息的协议。</li>
+<li>HTTP协议是建立在TCP协议基础之上的。当浏览器需要从服务器获取网页数据时，会发出一次HTTP请求。HTTP会通过TCP建立一个到服务器的连接通道，当本次请求需要的数据完毕后，HTTP会立即将TCP连接断开。</li>
+<li>HTTP连接最显著的特点是：客户端发送的每次请求都需要服务器回送响应，在请求结束后，会主动释放连接。从建立连接到关闭连接的过程为“一次连接”。</li>
+<li>TCP就是单纯建立连接，不涉及任何我们需要请求的实际数据，是简单的传输。HTTP是用来收发数据的。</li>
+<li>TCP/IP协议是一个协议集合。TCP/IP协议按照层次分为以下四层：应用层、传输层、网络层、数据链路层。分层的目的是：一个层只负责一个层次的问题，只要维护好这个层次就可以了。</li>
+</ol>
+
+    </div>
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:16px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+      
+    </div>
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script type="text/javascript" src="http://jslibs.wuxubj.cn/sweetalert_mini/jquery-1.7.1.min.js"></script>
+  <script src="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.mini.css">
+
+  <p><span>本文标题:</span>http/tcp协议基础</a></p>
+  <p><span>文章作者:</span>ssqxx</a></p>
+  <p><span>发布时间:</span>2020年04月14日 - 15:58:29</p>
+  <p><span>最后更新:</span>2020年05月14日 - 19:08:17</p>
+  <p><span>原始链接:</span><a href="/2020/04/14/http-tcp-ip-base/" title="http/tcp协议基础">http://yoursite.com/2020/04/14/http-tcp-ip-base/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2020/04/14/http-tcp-ip-base/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    clipboard.on('success', $(function(){
+      $(".fa-clipboard").click(function(){
+        swal({   
+          title: "",   
+          text: '复制成功',   
+          html: false,
+          timer: 500,   
+          showConfirmButton: false
+        });
+      });
+    }));  
+</script>
+
+      
+    </div>
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/http/" rel="tag"><i class="fa fa-tag"></i> http</a>
+              <a href="/tags/tcp/" rel="tag"><i class="fa fa-tag"></i> tcp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/11/20/first-use-UbuntuOS/" rel="prev" title="初次上手UbuntuOS">
+      <i class="fa fa-chevron-left"></i> 初次上手UbuntuOS
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#网络模型"><span class="nav-number">1.</span> <span class="nav-text">网络模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP协议"><span class="nav-number">2.</span> <span class="nav-text">HTTP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本概念"><span class="nav-number">2.0.1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP事务工作过程"><span class="nav-number">2.0.2.</span> <span class="nav-text">HTTP事务工作过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP的优点"><span class="nav-number">2.0.3.</span> <span class="nav-text">HTTP的优点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP请求方式"><span class="nav-number">2.0.4.</span> <span class="nav-text">HTTP请求方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTPS"><span class="nav-number">2.0.5.</span> <span class="nav-text">HTTPS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#状态码"><span class="nav-number">2.0.6.</span> <span class="nav-text">状态码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-IP系列协议"><span class="nav-number">3.</span> <span class="nav-text">TCP&#x2F;IP系列协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#传输"><span class="nav-number">3.0.1.</span> <span class="nav-text">传输</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三次握手"><span class="nav-number">3.0.2.</span> <span class="nav-text">三次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#理解题意：就是客户端为什么还要发送一次确认呢？"><span class="nav-number">3.0.2.1.</span> <span class="nav-text">理解题意：就是客户端为什么还要发送一次确认呢？</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四次挥手"><span class="nav-number">3.0.3.</span> <span class="nav-text">四次挥手</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#握手与挥手图示"><span class="nav-number">3.0.4.</span> <span class="nav-text">握手与挥手图示</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#原理"><span class="nav-number">3.0.5.</span> <span class="nav-text">原理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP-IP与HTTP的区别"><span class="nav-number">4.0.1.</span> <span class="nav-text">TCP&#x2F;IP与HTTP的区别</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ssqxx"
+      src="/images/author/good_lucky.jpg">
+  <p class="site-author-name" itemprop="name">ssqxx</p>
+  <div class="site-description" itemprop="description">ssqxx-记录技术成长的历程</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:ssqxx77@gmail.com" title="Mail → mailto:ssqxx77@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-heartbeat"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://durex3.github.io/" title="https:&#x2F;&#x2F;durex3.github.io" rel="noopener" target="_blank">durex3_大仙</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ssqxx</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_lines.min.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+<!--jquery包-->
+<script type="text/javascript" src="/js/src/jquery-3.4.1.js"></script>
+<!--崩溃欺骗-->
+<script type="text/javascript" src="/js/src/crash_cheat/crash_cheat.js"></script>
+<!--点击出爱心-->
+<script type="text/javascript" src="/js/src/love_click/love_click.js"></script>
+<!--代码复制-->
+<script type="text/javascript" src="/js/src/clipboard/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/src/clipboard/clipboard-use.js"></script>
