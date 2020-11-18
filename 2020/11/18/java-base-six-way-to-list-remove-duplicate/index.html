@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="JAVA基础-List去重的6种方式简述java开发中经常会遇到List去重这个工作，现在就来整理一下List去重的6种方式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA基础-List去重的6种方式">
+<meta property="og:url" content="http://yoursite.com/2020/11/18/java-base-six-way-to-list-remove-duplicate/index.html">
+<meta property="og:site_name" content="ssqxx-博客">
+<meta property="og:description" content="JAVA基础-List去重的6种方式简述java开发中经常会遇到List去重这个工作，现在就来整理一下List去重的6种方式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-18T07:29:40.000Z">
+<meta property="article:modified_time" content="2020-11-18T07:34:54.399Z">
+<meta property="article:author" content="ssqxx">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/18/java-base-six-way-to-list-remove-duplicate/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>JAVA基础-List去重的6种方式 | ssqxx-博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ssqxx-博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">ssqxx的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/18/java-base-six-way-to-list-remove-duplicate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author/good_lucky.jpg">
+      <meta itemprop="name" content="ssqxx">
+      <meta itemprop="description" content="ssqxx-记录技术成长的历程">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ssqxx-博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JAVA基础-List去重的6种方式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-18 15:29:40 / 修改时间：15:34:54" itemprop="dateCreated datePublished" datetime="2020-11-18T15:29:40+08:00">2020-11-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="JAVA基础-List去重的6种方式"><a href="#JAVA基础-List去重的6种方式" class="headerlink" title="JAVA基础-List去重的6种方式"></a>JAVA基础-List去重的6种方式</h1><h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>java开发中经常会遇到List去重这个工作，现在就来整理一下List去重的6种方式。</p>
+<a id="more"></a>
+
+<h2 id="方法代码以及效率测试"><a href="#方法代码以及效率测试" class="headerlink" title="方法代码以及效率测试"></a>方法代码以及效率测试</h2><h3 id="模拟测试数据"><a href="#模拟测试数据" class="headerlink" title="模拟测试数据"></a>模拟测试数据</h3><h4 id="相关代码："><a href="#相关代码：" class="headerlink" title="相关代码："></a>相关代码：</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.LinkedList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@ClassName</span>: ListCleatMain</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: 模拟数据进行List去重测试</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: ssqxx</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2020-11-18</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ListCleatMain</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//声明一个新的List</span></span><br><span class="line">        List&lt;Integer&gt; list = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">        <span class="comment">//数据装载开始时间</span></span><br><span class="line">        Long startTime = System.currentTimeMillis();</span><br><span class="line">        System.out.println(<span class="string">"数据装载开始时间:"</span> + startTime);</span><br><span class="line">        <span class="comment">//模拟添加200000个Integer</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">200000</span>;i++)&#123;</span><br><span class="line">            Integer in =(<span class="keyword">int</span>)(Math.random()*<span class="number">10</span>+<span class="number">1</span>);</span><br><span class="line">            list.add(in);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//数据装载结束时间</span></span><br><span class="line">        Long endTime = System.currentTimeMillis();</span><br><span class="line">        System.out.println(<span class="string">"数据装载结束时间:"</span> + endTime);</span><br><span class="line">        <span class="comment">//数据装载时差</span></span><br><span class="line">        System.out.println(<span class="string">"数据装载时差："</span> + (endTime - startTime));</span><br><span class="line"></span><br><span class="line">        <span class="comment">//原数据遍历打印</span></span><br><span class="line">        System.out.println(<span class="string">"原数据："</span>);</span><br><span class="line">        list.forEach( li-&gt; &#123;</span><br><span class="line">            System.out.print(li + <span class="string">"  "</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">        System.out.println();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//开始时间</span></span><br><span class="line">        <span class="keyword">long</span> startClear = System.currentTimeMillis();</span><br><span class="line">        System.out.println(<span class="string">"开始时间:"</span> + startClear);</span><br><span class="line">        <span class="comment">//去重-双for循环去重</span></span><br><span class="line">        List newList = ListClearByDoubleFor.listRemove(list);</span><br><span class="line">        <span class="comment">//去重-Contains方法去重</span></span><br><span class="line"><span class="comment">//        List newList = ListClearByContains.listRemove(list);</span></span><br><span class="line">        <span class="comment">//去重-利用HashSet去重</span></span><br><span class="line"><span class="comment">//        List newList = ListClearByHashSet.listRemove(list);</span></span><br><span class="line">        <span class="comment">//去重-利用TreeSet去重</span></span><br><span class="line"><span class="comment">//        List newList = ListClearByTreeSet.listRemove(list);</span></span><br><span class="line">        <span class="comment">//去重-利用LinkedHashSet去重</span></span><br><span class="line"><span class="comment">//        List newList = ListClearByLinkedHashSet.listRemove(list);</span></span><br><span class="line">        <span class="comment">//去重-利用Java8的stream去重</span></span><br><span class="line"><span class="comment">//        List newList = ListClearByStream.listRemove(list);</span></span><br><span class="line">        <span class="comment">//结束时间</span></span><br><span class="line">        <span class="keyword">long</span> endClear = System.currentTimeMillis();</span><br><span class="line">        System.out.println(<span class="string">"结束时间："</span> + endClear);</span><br><span class="line">        <span class="comment">//时间差</span></span><br><span class="line">        System.out.println(<span class="string">"去重用时："</span> + (endClear - startClear));</span><br><span class="line"></span><br><span class="line">        <span class="comment">//去重后数据遍历打印</span></span><br><span class="line">        System.out.println(<span class="string">"新数据："</span>);</span><br><span class="line">        newList.forEach(li -&gt; &#123;</span><br><span class="line">            System.out.print(li + <span class="string">"  "</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="双for循环"><a href="#双for循环" class="headerlink" title="双for循环"></a>双for循环</h3><h4 id="实现思想："><a href="#实现思想：" class="headerlink" title="实现思想："></a>实现思想：</h4><p>使用两个for循环遍历集合所有元素，然后进行判断是否有相同元素，如果有，则去除。(有序)</p>
+<h4 id="相关代码：-1"><a href="#相关代码：-1" class="headerlink" title="相关代码："></a>相关代码：</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@ClassName</span>: ListClearByDoubleFor</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: 双for循环进行list去重</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: ssqxx</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2020-11-18</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ListClearByDoubleFor</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据去重</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> list</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> list</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List <span class="title">listRemove</span><span class="params">(List&lt;Integer&gt; list)</span></span>&#123;</span><br><span class="line">        <span class="comment">//双for循环进行list去重</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;list.size(); i++)&#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j=i+<span class="number">1</span>; j&lt;list.size(); j++)&#123;</span><br><span class="line">                <span class="keyword">if</span> (list.get(i).equals(list.get(j)))&#123;</span><br><span class="line">                    list.remove(j);</span><br><span class="line">                    j--;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="效率测试："><a href="#效率测试：" class="headerlink" title="效率测试："></a>效率测试：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">数据装载开始时间:1605667320390</span><br><span class="line">数据装载结束时间:1605667320407</span><br><span class="line">数据装载时差：17</span><br><span class="line">原数据：</span><br><span class="line">9  8  3  2  3  10  4  9  5  3  1  7  6  8  7  8  9  5  5  8  2  2 ……（20W数据）</span><br><span class="line">开始时间:1605667320811</span><br><span class="line">结束时间：1605667413269</span><br><span class="line">去重用时：92458（这还用再测？）</span><br><span class="line">新数据：</span><br><span class="line">9  8  3  2  10  4  5  1  7  6</span><br><span class="line">--------------------------------------------------</span><br><span class="line">&lt;!-- 200W(20以内)数据测试 --&gt;</span><br><span class="line">它不配！！！！！</span><br></pre></td></tr></table></figure>
+
+<h3 id="List的contains方法"><a href="#List的contains方法" class="headerlink" title="List的contains方法"></a>List的contains方法</h3><h4 id="实现思想：-1"><a href="#实现思想：-1" class="headerlink" title="实现思想："></a>实现思想：</h4><p>利用List集合contains方法循环遍历，先创建新的List集合，接着循环遍历原来的List集合，判断新集合是否包含有旧集合，如果有，则不添加至新集合，否则添加。（有序） </p>
+<h4 id="相关代码：-2"><a href="#相关代码：-2" class="headerlink" title="相关代码："></a>相关代码：</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@ClassName</span>: ListClearByContains</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: 利用List集合contains方法循环遍历去重</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: ssqxx</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2020-11-18</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ListClearByContains</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据去重</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> list</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> list</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List <span class="title">listRemove</span><span class="params">(List list)</span></span>&#123;</span><br><span class="line">        <span class="comment">//利用List集合contains方法循环遍历去重</span></span><br><span class="line">        List newList = <span class="keyword">new</span> ArrayList();</span><br><span class="line">        list.forEach(li -&gt; &#123;</span><br><span class="line">            <span class="comment">//判断新集合是否包含有，如果不包含有，则存入新集合中</span></span><br><span class="line">            <span class="keyword">if</span> (!newList.contains(li))&#123;</span><br><span class="line">                newList.add(li);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">return</span> newList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="效率测试：-1"><a href="#效率测试：-1" class="headerlink" title="效率测试："></a>效率测试：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">数据装载开始时间:1605674583323</span><br><span class="line">数据装载结束时间:1605674583340</span><br><span class="line">数据装载时差：17</span><br><span class="line">原数据：</span><br><span class="line">8  10  7  3  7  6  6  1  7  6  2  8  9  6  6  5  2  6  5  5  3  1 ……（20W数据）</span><br><span class="line">开始时间:1605674583756</span><br><span class="line">结束时间：1605674583771</span><br><span class="line">去重用时：15&#x2F;13&#x2F;13&#x2F;13&#x2F;11（5次测试）</span><br><span class="line">新数据：</span><br><span class="line">8  10  7  3  6  1  2  9  5  4</span><br><span class="line">--------------------------------------------------</span><br><span class="line">&lt;!-- 200W(20以内)数据测试 --&gt;</span><br><span class="line">开始时间:1605680194498</span><br><span class="line">结束时间：1605680194553</span><br><span class="line">去重用时：55&#x2F;57&#x2F;56&#x2F;61&#x2F;64（打印原数据）</span><br><span class="line">去重用时：144&#x2F;120&#x2F;127&#x2F;124&#x2F;125（不打印原数据）</span><br><span class="line">新数据：</span><br><span class="line">17  3  2  16  13  6  18  1  10  5  11  7  20  9  15  14  12  8  19  4</span><br></pre></td></tr></table></figure>
+
+<h3 id="HashSet方法"><a href="#HashSet方法" class="headerlink" title="HashSet方法"></a>HashSet方法</h3><h4 id="实现思想：-2"><a href="#实现思想：-2" class="headerlink" title="实现思想："></a>实现思想：</h4><p>HashSet实现了Set接口，不允许出现重复元素。可以基于这个想法，把List集合所有元素存入HashSet对象，接着把List集合元素全部清空，最后把HashSet对象元素全部添加至List集合中，这样就可以保证不出现重复元素。而HashSet有一个构造函数，在初始化时可以直接添加元素。其中，HashSet不能保证顺序不变，所以此方式不能保证List集合原来的顺序不变。 （无序）</p>
+<h4 id="相关代码：-3"><a href="#相关代码：-3" class="headerlink" title="相关代码："></a>相关代码：</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@ClassName</span>: ListClearByHashSet</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: List集合放入HashSet中利用HashSet实现Set接口的无重复元素特性去重</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: ssqxx</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2020-11-18</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ListClearByHashSet</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据去重</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> list</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> list</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List <span class="title">listRemove</span><span class="params">(List list)</span></span>&#123;</span><br><span class="line">        <span class="comment">//List集合放入HashSet中利用HashSet实现Set接口的无重复元素特性去重</span></span><br><span class="line">        HashSet set = <span class="keyword">new</span> HashSet(list);</span><br><span class="line">        list.clear();</span><br><span class="line">        list.add(set);</span><br><span class="line"><span class="comment">//        Iterator it = set.iterator();</span></span><br><span class="line"><span class="comment">//        while (it.hasNext())&#123;</span></span><br><span class="line"><span class="comment">//            list.add(it.next());</span></span><br><span class="line"><span class="comment">//        &#125;</span></span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="效率测试：-2"><a href="#效率测试：-2" class="headerlink" title="效率测试："></a>效率测试：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">数据装载开始时间:1605675392758</span><br><span class="line">数据装载结束时间:1605675392776</span><br><span class="line">数据装载时差：18</span><br><span class="line">原数据：</span><br><span class="line">3  6  1  1  7  6  9  2  8  6  4  7  1  9  5  5  4  3  3  1  10  8  10  10……（20w数据）</span><br><span class="line">开始时间:1605675393184</span><br><span class="line">结束时间：1605675393200</span><br><span class="line">去重用时：16&#x2F;20&#x2F;15&#x2F;12&#x2F;15（5次测试）</span><br><span class="line">新数据：</span><br><span class="line">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]</span><br><span class="line">--------------------------------------------------</span><br><span class="line">&lt;!-- 200W(20以内)数据测试 --&gt;</span><br><span class="line">开始时间:1605680088596</span><br><span class="line">结束时间：1605680088641</span><br><span class="line">去重用时：45&#x2F;45&#x2F;46&#x2F;52&#x2F;44（打印原数据）</span><br><span class="line">去重用时：167&#x2F;163&#x2F;160&#x2F;164&#x2F;166（不打印原数据）</span><br><span class="line">新数据：</span><br><span class="line">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]</span><br></pre></td></tr></table></figure>
+
+<h3 id="TreeSet方法"><a href="#TreeSet方法" class="headerlink" title="TreeSet方法"></a>TreeSet方法</h3><h4 id="实现思想：-3"><a href="#实现思想：-3" class="headerlink" title="实现思想："></a>实现思想：</h4><p> TreeSet集合也是实现Set接口，是一个有序的，并且无重复元素集合。（有序）</p>
+<h4 id="相关代码：-4"><a href="#相关代码：-4" class="headerlink" title="相关代码："></a>相关代码：</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@ClassName</span>: ListClearByTreeSet</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: List集合放入TreeSet中利用HashSet实现Set接口的无重复元素特性去重</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: ssqxx</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2020-11-18</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ListClearByTreeSet</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据去重</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> list</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> list</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List <span class="title">listRemove</span><span class="params">(List list)</span></span>&#123;</span><br><span class="line">        <span class="comment">//List集合放入TreeSet中利用HashSet实现Set接口的无重复元素特性去重</span></span><br><span class="line">        TreeSet set = <span class="keyword">new</span> TreeSet(list);</span><br><span class="line">        list.clear();</span><br><span class="line">        list.add(set);</span><br><span class="line"><span class="comment">//        Iterator it = set.iterator();</span></span><br><span class="line"><span class="comment">//        while (it.hasNext())&#123;</span></span><br><span class="line"><span class="comment">//            list.add(it.next());</span></span><br><span class="line"><span class="comment">//        &#125;</span></span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="效率测试：-3"><a href="#效率测试：-3" class="headerlink" title="效率测试："></a>效率测试：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">数据装载开始时间:1605675683470</span><br><span class="line">数据装载结束时间:1605675683487</span><br><span class="line">数据装载时差：17</span><br><span class="line">原数据：</span><br><span class="line">8  10  4  3  8  10  8  2  1  9  1  3  1  1  8  3  4  4  10  6  6  2……（20W数据）</span><br><span class="line">开始时间:1605675683881</span><br><span class="line">结束时间：1605675683909</span><br><span class="line">去重用时：28&#x2F;25&#x2F;29&#x2F;26&#x2F;26（5次测试）</span><br><span class="line">新数据：</span><br><span class="line">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]</span><br><span class="line">--------------------------------------------------</span><br><span class="line">&lt;!-- 200W(20以内)数据测试 --&gt;</span><br><span class="line">开始时间:1605679953606</span><br><span class="line">结束时间：1605679953697</span><br><span class="line">去重用时：91&#x2F;94&#x2F;104&#x2F;103&#x2F;101（打印原数据）</span><br><span class="line">去重用时：112&#x2F;119&#x2F;123&#x2F;113&#x2F;117（不打印原数据）</span><br><span class="line">新数据：</span><br><span class="line">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]</span><br></pre></td></tr></table></figure>
+
+<h3 id="LinkedHashSet方法"><a href="#LinkedHashSet方法" class="headerlink" title="LinkedHashSet方法"></a>LinkedHashSet方法</h3><h4 id="实现思想：-4"><a href="#实现思想：-4" class="headerlink" title="实现思想："></a>实现思想：</h4><p>LinkedHashSet是一个实现Set接口将ArrayList删除重复数据的最佳方法。LinkedHashSet在内部完成两件事：删除重复数据，保持添加到其中的数据的顺序。（有序）</p>
+<h4 id="相关代码：-5"><a href="#相关代码：-5" class="headerlink" title="相关代码："></a>相关代码：</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@ClassName</span>: ListClearByLinkedHashSet</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: List集合放入LinkedHashSet中利用LinkedHashSet实现Set接口的无重复元素特性去重</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: ssqxx</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2020-11-18</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ListClearByLinkedHashSet</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据去重</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> list</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> list</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List <span class="title">listRemove</span><span class="params">(List list)</span></span>&#123;</span><br><span class="line">        <span class="comment">//List集合放入LinkedHashSet中利用LinkedHashSet实现Set接口的无重复元素特性去重</span></span><br><span class="line">        LinkedHashSet hashSet = <span class="keyword">new</span> LinkedHashSet(list);</span><br><span class="line">        list.clear();</span><br><span class="line">        list.add(hashSet);</span><br><span class="line"><span class="comment">//        Iterator iterator = hashSet.iterator();</span></span><br><span class="line"><span class="comment">//        while(iterator.hasNext())&#123;</span></span><br><span class="line"><span class="comment">//            list.add(iterator.next());</span></span><br><span class="line"><span class="comment">//        &#125;</span></span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="效率测试：-4"><a href="#效率测试：-4" class="headerlink" title="效率测试："></a>效率测试：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">数据装载开始时间:1605675839400</span><br><span class="line">数据装载结束时间:1605675839417</span><br><span class="line">数据装载时差：17</span><br><span class="line">原数据：</span><br><span class="line">2  7  5  1  4  4  1  5  1  9  10  7  3  9  7  3  6  7  1  1  4……（20W数据）</span><br><span class="line">开始时间:1605675839818</span><br><span class="line">结束时间：1605675839835</span><br><span class="line">去重用时：17&#x2F;16&#x2F;14&#x2F;17&#x2F;19（5次测试）</span><br><span class="line">新数据：</span><br><span class="line">[2, 7, 5, 1, 4, 9, 10, 3, 6, 8]</span><br><span class="line">--------------------------------------------------</span><br><span class="line">&lt;!-- 200W(20以内)数据测试 --&gt;</span><br><span class="line">开始时间:1605679823889</span><br><span class="line">结束时间：1605679823938</span><br><span class="line">去重用时：49&#x2F;43&#x2F;42&#x2F;42&#x2F;44（打印原数据）</span><br><span class="line">去重用时：173&#x2F;159&#x2F;160&#x2F;163&#x2F;169（不打印原数据）</span><br><span class="line">新数据：</span><br><span class="line">[12, 1, 9, 6, 3, 8, 19, 13, 5, 16, 2, 10, 11, 15, 17, 4, 7, 20, 14, 18]</span><br></pre></td></tr></table></figure>
+
+<h3 id="Java8的stream方法"><a href="#Java8的stream方法" class="headerlink" title="Java8的stream方法"></a>Java8的stream方法</h3><h4 id="实现思想：-5"><a href="#实现思想：-5" class="headerlink" title="实现思想："></a>实现思想：</h4><p>要从arraylist中删除重复项，我们也可以使用java 8 stream api。使用steam的distinct()方法返回一个由不同数据组成的流，通过对象的equals（）方法进行比较。 （有序）</p>
+<h4 id="相关代码：-6"><a href="#相关代码：-6" class="headerlink" title="相关代码："></a>相关代码：</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.Collectors;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@ClassName</span>: ListClearByStream</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: 使用java8新特性stream实现List去重</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: ssqxx</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2020-11-18</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ListClearByStream</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据去重</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> list</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> list</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List <span class="title">listRemove</span><span class="params">(List list)</span></span>&#123;</span><br><span class="line">        <span class="comment">//使用java8新特性stream实现List去重</span></span><br><span class="line">        List newList = (List) list.stream().distinct().collect(Collectors.toList());</span><br><span class="line">        <span class="keyword">return</span> newList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="效率测试：-5"><a href="#效率测试：-5" class="headerlink" title="效率测试："></a>效率测试：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">数据装载开始时间:1605679132825</span><br><span class="line">数据装载结束时间:1605679132841</span><br><span class="line">数据装载时差：16</span><br><span class="line">原数据：</span><br><span class="line">7  3  4  6  5  2  7  8  5  6  7  4  3  8  6  5  2  4  5  5  2  10  2……（20W数据）</span><br><span class="line">开始时间:1605679133233</span><br><span class="line">结束时间：1605679133248</span><br><span class="line">去重用时：15&#x2F;14&#x2F;13&#x2F;19&#x2F;16（5次测试）</span><br><span class="line">新数据：</span><br><span class="line">7  3  4  6  5  2  8  10  9  1</span><br><span class="line">--------------------------------------------------</span><br><span class="line">&lt;!-- 200W(20以内)数据测试 --&gt;</span><br><span class="line">开始时间:1605679582415</span><br><span class="line">结束时间：1605679582443</span><br><span class="line">去重用时：28&#x2F;31&#x2F;35&#x2F;27&#x2F;31（打印原数据）</span><br><span class="line">去重用时：94&#x2F;81&#x2F;96&#x2F;96&#x2F;87（不打印原数据）</span><br><span class="line">新数据：</span><br><span class="line">8  15  4  3  17  1  10  19  12  9  16  20  7  6  18  13  2  5  14  11</span><br></pre></td></tr></table></figure>
+
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><h3 id="随机数在200000范围10以内（平均值）："><a href="#随机数在200000范围10以内（平均值）：" class="headerlink" title="随机数在200000范围10以内（平均值）："></a>随机数在200000范围10以内（平均值）：</h3><ul>
+<li>使用两个for循环实现List去重：94258毫秒</li>
+<li>使用List集合contains方法循环遍历去重时间：13毫秒 </li>
+<li>使用HashSet实现List去重时间：16毫秒</li>
+<li>使用TreeSet实现List去重时间：27毫秒</li>
+<li>使用LinkedHashSet实现List去重时间：17毫秒</li>
+<li>使用java8新特性stream实现List去重：15毫秒</li>
+</ul>
+<h3 id="随机数在2000000范围20以内（平均值）："><a href="#随机数在2000000范围20以内（平均值）：" class="headerlink" title="随机数在2000000范围20以内（平均值）："></a>随机数在2000000范围20以内（平均值）：</h3><ul>
+<li>使用两个for循环实现List去重：已放弃！！！！</li>
+<li>使用List集合contains方法循环遍历去重时间：128毫秒 </li>
+<li>使用HashSet实现List去重时间：164毫秒</li>
+<li>使用TreeSet实现List去重时间：117毫秒</li>
+<li>使用LinkedHashSet实现List去重时间：165毫秒</li>
+<li>使用java8新特性stream实现List去重：91毫秒</li>
+</ul>
+<h3 id="随机数在20000000范围20以内（一次值）："><a href="#随机数在20000000范围20以内（一次值）：" class="headerlink" title="随机数在20000000范围20以内（一次值）："></a>随机数在20000000范围20以内（一次值）：</h3><ul>
+<li>使用两个for循环实现List去重：已放弃！！！！</li>
+<li>使用List集合contains方法循环遍历去重时间：612毫秒 </li>
+<li>使用HashSet实现List去重时间：334毫秒</li>
+<li>使用TreeSet实现List去重时间：813毫秒</li>
+<li>使用LinkedHashSet实现List去重时间：364毫秒</li>
+<li>使用java8新特性stream实现List去重：214毫秒</li>
+</ul>
+<h3 id="结论简述："><a href="#结论简述：" class="headerlink" title="结论简述："></a>结论简述：</h3><p>目前表现最好的是java8新特性stream实现的list去除，不论是数据量大小；</p>
+<p>HashSet、TreeSet、LinkedHashSet都有实现Set接口，所以速度都不会很慢，但是在过了1000W这个数量的list后去重速度骤降，HashSet，LinkedHashSet依旧稳定快速；整体上HashSet&gt;LinkedHashSet&gt;TreeSet。不过HashSet是无序的，若想有序可以使用LinkedHashSet；</p>
+<p>list集合的contains方法在数据量不大的时候能去重速度也挺快的，甚至能超过HashSet，但数据量大（500W）之后，去重速度骤降，数据量不大的list去重可以使用；</p>
+<p>双for循环进行list去重就……算了，放弃吧！</p>
+<h3 id="整体排序："><a href="#整体排序：" class="headerlink" title="整体排序："></a>整体排序：</h3><h4 id="500W数据以下："><a href="#500W数据以下：" class="headerlink" title="500W数据以下："></a>500W数据以下：</h4><ul>
+<li>（有序）stream&gt;contains&gt;LinkedHashSet&gt;TreeSet&gt;for</li>
+<li>（无序）stream&gt;contains&gt;HashSet&gt;LinkedHashSet&gt;TreeSet&gt;for</li>
+</ul>
+<h4 id="500W数据以上："><a href="#500W数据以上：" class="headerlink" title="500W数据以上："></a>500W数据以上：</h4><ul>
+<li>（有序）stream&gt;LinkedHashSet&gt;contains&gt;TreeSet&gt;for</li>
+<li>（无序）stream&gt;HashSet&gt;LinkedHashSet&gt;contains&gt;TreeSet&gt;for</li>
+</ul>
+<p><em>以上数据为自测数据，可能与实际应用会存在误差，下次再测试一下String（字符串）的list排序。</em></p>
+
+    </div>
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:16px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+      
+    </div>
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script type="text/javascript" src="http://jslibs.wuxubj.cn/sweetalert_mini/jquery-1.7.1.min.js"></script>
+  <script src="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.mini.css">
+
+  <p><span>本文标题:</span>JAVA基础-List去重的6种方式</a></p>
+  <p><span>文章作者:</span>ssqxx</a></p>
+  <p><span>发布时间:</span>2020年11月18日 - 15:29:40</p>
+  <p><span>最后更新:</span>2020年11月18日 - 15:34:54</p>
+  <p><span>原始链接:</span><a href="/2020/11/18/java-base-six-way-to-list-remove-duplicate/" title="JAVA基础-List去重的6种方式">http://yoursite.com/2020/11/18/java-base-six-way-to-list-remove-duplicate/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2020/11/18/java-base-six-way-to-list-remove-duplicate/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    clipboard.on('success', $(function(){
+      $(".fa-clipboard").click(function(){
+        swal({   
+          title: "",   
+          text: '复制成功',   
+          html: false,
+          timer: 500,   
+          showConfirmButton: false
+        });
+      });
+    }));  
+</script>
+
+      
+    </div>
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"><i class="fa fa-tag"></i> java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/14/http-tcp-ip-base/" rel="prev" title="http/tcp协议基础">
+      <i class="fa fa-chevron-left"></i> http/tcp协议基础
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JAVA基础-List去重的6种方式"><span class="nav-number">1.</span> <span class="nav-text">JAVA基础-List去重的6种方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简述"><span class="nav-number">1.1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法代码以及效率测试"><span class="nav-number">1.2.</span> <span class="nav-text">方法代码以及效率测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟测试数据"><span class="nav-number">1.2.1.</span> <span class="nav-text">模拟测试数据</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#相关代码："><span class="nav-number">1.2.1.1.</span> <span class="nav-text">相关代码：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#双for循环"><span class="nav-number">1.2.2.</span> <span class="nav-text">双for循环</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实现思想："><span class="nav-number">1.2.2.1.</span> <span class="nav-text">实现思想：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相关代码：-1"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">相关代码：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#效率测试："><span class="nav-number">1.2.2.3.</span> <span class="nav-text">效率测试：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#List的contains方法"><span class="nav-number">1.2.3.</span> <span class="nav-text">List的contains方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实现思想：-1"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">实现思想：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相关代码：-2"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">相关代码：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#效率测试：-1"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">效率测试：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashSet方法"><span class="nav-number">1.2.4.</span> <span class="nav-text">HashSet方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实现思想：-2"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">实现思想：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相关代码：-3"><span class="nav-number">1.2.4.2.</span> <span class="nav-text">相关代码：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#效率测试：-2"><span class="nav-number">1.2.4.3.</span> <span class="nav-text">效率测试：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TreeSet方法"><span class="nav-number">1.2.5.</span> <span class="nav-text">TreeSet方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实现思想：-3"><span class="nav-number">1.2.5.1.</span> <span class="nav-text">实现思想：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相关代码：-4"><span class="nav-number">1.2.5.2.</span> <span class="nav-text">相关代码：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#效率测试：-3"><span class="nav-number">1.2.5.3.</span> <span class="nav-text">效率测试：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LinkedHashSet方法"><span class="nav-number">1.2.6.</span> <span class="nav-text">LinkedHashSet方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实现思想：-4"><span class="nav-number">1.2.6.1.</span> <span class="nav-text">实现思想：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相关代码：-5"><span class="nav-number">1.2.6.2.</span> <span class="nav-text">相关代码：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#效率测试：-4"><span class="nav-number">1.2.6.3.</span> <span class="nav-text">效率测试：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java8的stream方法"><span class="nav-number">1.2.7.</span> <span class="nav-text">Java8的stream方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实现思想：-5"><span class="nav-number">1.2.7.1.</span> <span class="nav-text">实现思想：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相关代码：-6"><span class="nav-number">1.2.7.2.</span> <span class="nav-text">相关代码：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#效率测试：-5"><span class="nav-number">1.2.7.3.</span> <span class="nav-text">效率测试：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">1.3.</span> <span class="nav-text">结论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#随机数在200000范围10以内（平均值）："><span class="nav-number">1.3.1.</span> <span class="nav-text">随机数在200000范围10以内（平均值）：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#随机数在2000000范围20以内（平均值）："><span class="nav-number">1.3.2.</span> <span class="nav-text">随机数在2000000范围20以内（平均值）：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#随机数在20000000范围20以内（一次值）："><span class="nav-number">1.3.3.</span> <span class="nav-text">随机数在20000000范围20以内（一次值）：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结论简述："><span class="nav-number">1.3.4.</span> <span class="nav-text">结论简述：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#整体排序："><span class="nav-number">1.3.5.</span> <span class="nav-text">整体排序：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#500W数据以下："><span class="nav-number">1.3.5.1.</span> <span class="nav-text">500W数据以下：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#500W数据以上："><span class="nav-number">1.3.5.2.</span> <span class="nav-text">500W数据以上：</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ssqxx"
+      src="/images/author/good_lucky.jpg">
+  <p class="site-author-name" itemprop="name">ssqxx</p>
+  <div class="site-description" itemprop="description">ssqxx-记录技术成长的历程</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:ssqxx77@gmail.com" title="Mail → mailto:ssqxx77@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-heartbeat"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://durex3.github.io/" title="https:&#x2F;&#x2F;durex3.github.io" rel="noopener" target="_blank">durex3_大仙</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ssqxx</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_lines.min.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+<!--jquery包-->
+<script type="text/javascript" src="/js/src/jquery-3.4.1.js"></script>
+<!--崩溃欺骗-->
+<script type="text/javascript" src="/js/src/crash_cheat/crash_cheat.js"></script>
+<!--点击出爱心-->
+<script type="text/javascript" src="/js/src/love_click/love_click.js"></script>
+<!--代码复制-->
+<script type="text/javascript" src="/js/src/clipboard/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/src/clipboard/clipboard-use.js"></script>
