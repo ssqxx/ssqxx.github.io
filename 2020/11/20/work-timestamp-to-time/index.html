@@ -20,21 +20,20 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="一：下载主题 1：git bash进入你的博客文件夹中  2：将你喜欢的主题下载（我选择的是NexT） 1$ git clone https:&#x2F;&#x2F;github.com&#x2F;theme-next&#x2F;hexo-theme-next themes&#x2F;next   3：主题下载完成后，打开你的博客文件夹目录，在.&#x2F;themes下会多一个next的文件夹">
+  <meta name="description" content="JAVA时间格式为yyyy-MM-ddTHH:mm:ss.SSS+SSSS转为常用时间格式简介本文记录了在JAVA开发工作中遇到了时间格式为： yyyy-MM-ddTHH:mm:ss.SSS+SSSS 转为常用时间格式： yyyy-MM-dd HH:mm:ss 的解决方法，提供给碰到和我一样的问题的小伙伴，如果有更好的解决方式，也希望能在评论告知！ 内容问题在开发中遇到返回值为 1&quot;times">
 <meta property="og:type" content="article">
-<meta property="og:title" content="更改Hexo主题">
-<meta property="og:url" content="http://yoursite.com/2019/10/19/change-the-theme-of-Hexo/index.html">
+<meta property="og:title" content="JAVA时间格式为yyyy-MM-ddTHH:mm:ss.SSS+SSSS转为常用时间格式">
+<meta property="og:url" content="http://yoursite.com/2020/11/20/work-timestamp-to-time/index.html">
 <meta property="og:site_name" content="ssqxx-博客">
-<meta property="og:description" content="一：下载主题 1：git bash进入你的博客文件夹中  2：将你喜欢的主题下载（我选择的是NexT） 1$ git clone https:&#x2F;&#x2F;github.com&#x2F;theme-next&#x2F;hexo-theme-next themes&#x2F;next   3：主题下载完成后，打开你的博客文件夹目录，在.&#x2F;themes下会多一个next的文件夹">
+<meta property="og:description" content="JAVA时间格式为yyyy-MM-ddTHH:mm:ss.SSS+SSSS转为常用时间格式简介本文记录了在JAVA开发工作中遇到了时间格式为： yyyy-MM-ddTHH:mm:ss.SSS+SSSS 转为常用时间格式： yyyy-MM-dd HH:mm:ss 的解决方法，提供给碰到和我一样的问题的小伙伴，如果有更好的解决方式，也希望能在评论告知！ 内容问题在开发中遇到返回值为 1&quot;times">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2019-10-19T06:43:49.000Z">
-<meta property="article:modified_time" content="2020-03-22T03:35:22.989Z">
+<meta property="article:published_time" content="2020-11-20T05:09:34.000Z">
+<meta property="article:modified_time" content="2020-11-20T05:11:30.294Z">
 <meta property="article:author" content="ssqxx">
-<meta property="article:tag" content="hexo">
-<meta property="article:tag" content="next">
+<meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/2019/10/19/change-the-theme-of-Hexo/">
+<link rel="canonical" href="http://yoursite.com/2020/11/20/work-timestamp-to-time/">
 
 
 <script id="page-configurations">
@@ -47,7 +46,7 @@
   };
 </script>
 
-  <title>更改Hexo主题 | ssqxx-博客</title>
+  <title>JAVA时间格式为yyyy-MM-ddTHH:mm:ss.SSS+SSSS转为常用时间格式 | ssqxx-博客</title>
   
 
 
@@ -192,7 +191,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/19/change-the-theme-of-Hexo/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/20/work-timestamp-to-time/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/author/good_lucky.jpg">
@@ -205,7 +204,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          更改Hexo主题
+          JAVA时间格式为yyyy-MM-ddTHH:mm:ss.SSS+SSSS转为常用时间格式
         </h1>
 
         <div class="post-meta">
@@ -214,23 +213,17 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2019-10-19 14:43:49" itemprop="dateCreated datePublished" datetime="2019-10-19T14:43:49+08:00">2019-10-19</time>
+              <time title="创建时间：2020-11-20 13:09:34 / 修改时间：13:11:30" itemprop="dateCreated datePublished" datetime="2020-11-20T13:09:34+08:00">2020-11-20</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-22 11:35:22" itemprop="dateModified" datetime="2020-03-22T11:35:22+08:00">2020-03-22</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/hexo/" itemprop="url" rel="index"><span itemprop="name">hexo</span></a>
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
                 </span>
             </span>
 
@@ -245,25 +238,26 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="一：下载主题"><a href="#一：下载主题" class="headerlink" title="一：下载主题"></a>一：下载主题</h3><p> 1：git bash进入你的博客文件夹中</p>
-<p> 2：将你喜欢的主题下载（我选择的是NexT）</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> https://github.com/theme-next/hexo-theme-next themes/next</span></span><br></pre></td></tr></table></figure>
+        <a id="more"></a>
 
-<p> 3：主题下载完成后，打开你的博客文件夹目录，在./themes下会多一个next的文件夹</p>
-<a id="more"></a>
+<h1 id="JAVA时间格式为yyyy-MM-ddTHH-mm-ss-SSS-SSSS转为常用时间格式"><a href="#JAVA时间格式为yyyy-MM-ddTHH-mm-ss-SSS-SSSS转为常用时间格式" class="headerlink" title="JAVA时间格式为yyyy-MM-ddTHH:mm:ss.SSS+SSSS转为常用时间格式"></a>JAVA时间格式为yyyy-MM-ddTHH:mm:ss.SSS+SSSS转为常用时间格式</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>本文记录了在JAVA开发工作中遇到了时间格式为：</p>
+<p>yyyy-MM-ddTHH:mm:ss.SSS+SSSS</p>
+<p>转为常用时间格式：</p>
+<p>yyyy-MM-dd HH:mm:ss</p>
+<p>的解决方法，提供给碰到和我一样的问题的小伙伴，如果有更好的解决方式，也希望能在评论告知！</p>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>在开发中遇到返回值为</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">"timestamp": "2020-11-19T03:12:08.121+0000"</span><br></pre></td></tr></table></figure>
 
-<h3 id="二：主题更改"><a href="#二：主题更改" class="headerlink" title="二：主题更改"></a>二：主题更改</h3><p> 1：使用开发工具（我用WebStorm）打开你博客文件夹目录下的“_config.yml”配置文件</p>
-<p> 2：Ctr+F直接搜索“theme”，修改为你的新主题</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Extensions#</span></span><br><span class="line"><span class="comment"># Plugins: https://hexo.io/plugins/#</span></span><br><span class="line"><span class="comment"># Themes: https://hexo.io/themes/</span></span><br><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></table></figure>
+<p>的时间数据，当时琢磨了很久还是没有找到合适的转换方式，也在墙内外进行过搜索，也依旧没有一个明了的解决方式，所以只能自己摸索了</p>
+<h3 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h3><h4 id="解决方式："><a href="#解决方式：" class="headerlink" title="解决方式："></a>解决方式：</h4><ol>
+<li>因为返回的时间是字符串类型（String），所以进行两次替换</li>
+<li>将”+0000”替换为””非空格</li>
+<li>将”T”替换为” “空格</li>
+<li>SimpleDateFormat方法用格式为：yyyy-MM-dd HH:mm:ss.SSS 将原String转为Date</li>
+<li>最后再用SimpleDateFormat方法转为自己想要的时间格式</li>
+</ol>
+<h4 id="相关代码"><a href="#相关代码" class="headerlink" title="相关代码"></a>相关代码</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 时间格式转换</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> endTime yyyy-MM-ddTHH:mm:ss.SSS+SSSS</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">auxGetCommnetTime</span><span class="params">(String endTime)</span></span>&#123;</span><br><span class="line">        <span class="comment">//先替换"T"，再替换"+0000"</span></span><br><span class="line">        endTime = endTime.replaceAll(<span class="string">"T"</span>,<span class="string">" "</span>).replaceAll(<span class="string">"\\+0000"</span>,<span class="string">""</span>);</span><br><span class="line">        SimpleDateFormat simpleDateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss.SSS"</span>);</span><br><span class="line">        Date parse = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            parse = simpleDateFormat.parse(endTime);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ParseException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//需要转化成的时间格式,时间格式自定义</span></span><br><span class="line">        SimpleDateFormat sdf = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">        <span class="keyword">return</span> sdf.format(parse);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
-<p> 3：主题修改后可先本地调试查看</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hexo s</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="三：发布"><a href="#三：发布" class="headerlink" title="三：发布"></a>三：发布</h3><p> 1：发布你的新主题到github</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hexo d -g <span class="comment">#deploy发布 generate生成</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果缓存出问题，可先执行清除缓存命令，再发布</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> hexo clean</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="四：完成"><a href="#四：完成" class="headerlink" title="四：完成"></a>四：完成</h3><p> 完成所有步骤你会发现你的博客已经是新的主题啦！</p>
-<p> NexT更多的使用和配置点<a href="http://theme-next.iissnan.com/" target="_blank" rel="noopener">这里</a>！</p>
 
     </div>
     <div>
@@ -286,12 +280,12 @@
   <script src="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.min.js"></script>
   <link rel="stylesheet" type="text/css" href="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.mini.css">
 
-  <p><span>本文标题:</span>更改Hexo主题</a></p>
+  <p><span>本文标题:</span>JAVA时间格式为yyyy-MM-ddTHH:mm:ss.SSS+SSSS转为常用时间格式</a></p>
   <p><span>文章作者:</span>ssqxx</a></p>
-  <p><span>发布时间:</span>2019年10月19日 - 14:43:49</p>
-  <p><span>最后更新:</span>2020年03月22日 - 11:35:22</p>
-  <p><span>原始链接:</span><a href="/2019/10/19/change-the-theme-of-Hexo/" title="更改Hexo主题">http://yoursite.com/2019/10/19/change-the-theme-of-Hexo/</a>
-    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2019/10/19/change-the-theme-of-Hexo/"  aria-label="复制成功！"></i></span>
+  <p><span>发布时间:</span>2020年11月20日 - 13:09:34</p>
+  <p><span>最后更新:</span>2020年11月20日 - 13:11:30</p>
+  <p><span>原始链接:</span><a href="/2020/11/20/work-timestamp-to-time/" title="JAVA时间格式为yyyy-MM-ddTHH:mm:ss.SSS+SSSS转为常用时间格式">http://yoursite.com/2020/11/20/work-timestamp-to-time/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2020/11/20/work-timestamp-to-time/"  aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -319,8 +313,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/hexo/" rel="tag"><i class="fa fa-tag"></i> hexo</a>
-              <a href="/tags/next/" rel="tag"><i class="fa fa-tag"></i> next</a>
+              <a href="/tags/java/" rel="tag"><i class="fa fa-tag"></i> java</a>
           </div>
 
         
@@ -329,13 +322,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/10/16/the-process-of-record-create-github-blog/" rel="prev" title="记录创建Github-blog过程">
-      <i class="fa fa-chevron-left"></i> 记录创建Github-blog过程
+    <a href="/2020/11/19/work-export-word-springboot/" rel="prev" title="sprinboot使用freemarker导出word文档过程记录">
+      <i class="fa fa-chevron-left"></i> sprinboot使用freemarker导出word文档过程记录
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2019/10/22/grow-up-again-by-23/" rel="next" title="又长大了">
-      又长大了 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -395,7 +385,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一：下载主题"><span class="nav-number">1.</span> <span class="nav-text">一：下载主题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二：主题更改"><span class="nav-number">2.</span> <span class="nav-text">二：主题更改</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三：发布"><span class="nav-number">3.</span> <span class="nav-text">三：发布</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四：完成"><span class="nav-number">4.</span> <span class="nav-text">四：完成</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JAVA时间格式为yyyy-MM-ddTHH-mm-ss-SSS-SSSS转为常用时间格式"><span class="nav-number">1.</span> <span class="nav-text">JAVA时间格式为yyyy-MM-ddTHH:mm:ss.SSS+SSSS转为常用时间格式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内容"><span class="nav-number">1.2.</span> <span class="nav-text">内容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">1.2.1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决"><span class="nav-number">1.2.2.</span> <span class="nav-text">解决</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方式："><span class="nav-number">1.2.2.1.</span> <span class="nav-text">解决方式：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相关代码"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">相关代码</span></a></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
